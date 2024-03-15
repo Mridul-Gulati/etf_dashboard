@@ -48,9 +48,9 @@ while st.session_state.button_pressed:
                 qty = math.ceil(amount / cmp)
                 print(stock, cmp, pnl, amount, qty)
                 if pnl <= -0.02:
-                    new_res = pd.DataFrame({'ETF': [stock], 'Down%':[round(pnl,2)], 'CMP':[cmp], 'Amount': [amount], 'Qty': [qty]})
+                    new_res = pd.DataFrame({'ETF': [stock], 'Down%':[round(pnl*100,2)], 'CMP':[cmp], 'Amount': [amount], 'Qty': [qty]})
                     res = pd.concat([res,new_res],ignore_index=True)
             res_place.text('')
-            res_place.table(res)
+            res_place.dataframe(res)
         else:
             st.warning('Please upload an Excel file')
