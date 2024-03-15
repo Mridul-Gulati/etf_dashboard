@@ -28,6 +28,8 @@ if 'last_analysis_time' not in st.session_state:
 if uploaded_file and st.button('Analyse'):
     st.session_state.button_pressed = True
 res_place = st.empty()
+total = 0
+total_place = st.empty()
 while st.session_state.button_pressed:
     res = pd.DataFrame(columns=['ETF','Down%', 'CMP', 'Amount', 'Qty'])
     current_time = time.time()
@@ -46,10 +48,16 @@ while st.session_state.button_pressed:
                 variable = round((2500 * multi_fac)/100,2)
                 amount = int(2500 + variable)
                 qty = math.ceil(amount / cmp)
-                print(stock, cmp, pnl, amount, qty)
+                # print(stock, cmp, pnl, amount, qty)
                 if pnl <= -0.02:
                     new_res = pd.DataFrame({'ETF': [stock], 'Down%':[round(pnl*100,2)], 'CMP':[cmp], 'Amount': [amount], 'Qty': [qty]})
                     res = pd.concat([res,new_res],ignore_index=True)
+            if res.empty:
+                total = 0
+            else:
+                total = res['Amount'].sum()
+                total_place.success('Total Amount: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + str(total))
+
             res_place.text('')
             res_place.dataframe(res)
         else:
