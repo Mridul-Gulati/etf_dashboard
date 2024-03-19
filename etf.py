@@ -46,8 +46,8 @@ while st.session_state.button_pressed:
                 last_buy = df.loc[df['ETF'] == stock, 'LB'].values[0]
                 pnl = (cmp-buy_price)/buy_price
                 multi_fac = -1*round(pnl*1000,2)
-                variable = round((2500 * multi_fac)/100,2)
-                amount = int(2500 + variable)
+                variable = round((5000 * multi_fac)/100,2)
+                amount = int(5000 + variable)
                 qty = math.ceil(amount / cmp)
                 # print(stock, cmp, pnl, amount, qty)
                 if cmp < last_buy:
