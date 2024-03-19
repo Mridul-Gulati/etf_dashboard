@@ -31,7 +31,7 @@ res_place = st.empty()
 total = 0
 total_place = st.empty()
 while st.session_state.button_pressed:
-    res = pd.DataFrame(columns=['ETF','Down%', 'CMP', 'Amount', 'Qty', 'Last Buy'])
+    res = pd.DataFrame(columns=['ETF','Down%', 'CMP', 'Last Buy','Amount', 'Qty'])
     current_time = time.time()
     if current_time - st.session_state.last_analysis_time >= 300:
         st.session_state.last_analysis_time = current_time
