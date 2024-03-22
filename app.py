@@ -137,7 +137,7 @@ def main():
                 st.session_state.last_analysis_time = time.time()
                 st.session_state.selected_tab = selected_tab
 
-                res['CMP'] = round(get_cmp_price(secrets["connections"]["gsheets"]["worksheets"][selected_tab]),2)
+                res['CMP'] = round(get_cmp_price(st.secrets["connections"]["gsheets"]["worksheets"][selected_tab]),2)
                 res['Current Value'] = res['Qty.'] * res['CMP']
                 res['Gain%'] = round(((res['Current Value'] - res['Buy Value']) / res['Buy Value']) * 100,2)
                 res['Amount'] = res['Current Value'] - res['Buy Value']
