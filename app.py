@@ -31,7 +31,7 @@ def highlight_single_gain(value):
     return 'background-color: %s' % color
 
 @st.cache_data
-def fetch_data_from_google_sheets(secrets):
+def fetch_data_from_google_sheets(_secrets):
     try:
         client = gspread.service_account_from_dict({
             "type": secrets["connections"]["gsheets"]["type"],
