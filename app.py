@@ -9,7 +9,7 @@ import math
 import datetime
 from datetime import timedelta
 
-secrets = toml.load('secrets.toml')
+# secrets = toml.load('secrets.toml')
 st.set_page_config(page_title="ETFDash", page_icon="📈", layout="wide")
 def highlight_gain_condition(s):
     if s.name == 'Gain%':
@@ -79,7 +79,7 @@ def get_stock_data(stock, start, end):
         return None
 
 def main():
-    all_data = fetch_data_from_google_sheets(secrets)
+    all_data = fetch_data_from_google_sheets(st.secrets)
     st.sidebar.title('Navigation')
     selected_tab = st.sidebar.radio('Go to',['Summary']+list(all_data.keys()))
     if "selected_tab" not in st.session_state:
