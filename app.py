@@ -82,6 +82,9 @@ def main():
     all_data = fetch_data_from_google_sheets(st.secrets)
     st.sidebar.title('Navigation')
     selected_tab = st.sidebar.radio('Go to',['Summary']+list(all_data.keys()))
+    clear = st.sidebar.button("Clear Cache")
+    if clear:
+        st.cache_data.clear()
     if "selected_tab" not in st.session_state:
         st.session_state["selected_tab"] = 0
     res = all_data[selected_tab] if selected_tab != 'Summary' else all_data
