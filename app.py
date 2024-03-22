@@ -34,21 +34,21 @@ def highlight_single_gain(value):
 def fetch_data_from_google_sheets(_secrets):
     try:
         client = gspread.service_account_from_dict({
-            "type": secrets["connections"]["gsheets"]["type"],
-            "project_id": secrets["connections"]["gsheets"]["project_id"],
-            "private_key_id": secrets["connections"]["gsheets"]["private_key_id"],
-            "private_key": secrets["connections"]["gsheets"]["private_key"],
-            "client_email": secrets["connections"]["gsheets"]["client_email"],
-            "client_id": secrets["connections"]["gsheets"]["client_id"],
-            "auth_uri": secrets["connections"]["gsheets"]["auth_uri"],
-            "token_uri": secrets["connections"]["gsheets"]["token_uri"],
-            "auth_provider_x509_cert_url": secrets["connections"]["gsheets"]["auth_provider_x509_cert_url"],
-            "client_x509_cert_url": secrets["connections"]["gsheets"]["client_x509_cert_url"]
+            "type": _secrets["connections"]["gsheets"]["type"],
+            "project_id": _secrets["connections"]["gsheets"]["project_id"],
+            "private_key_id": _secrets["connections"]["gsheets"]["private_key_id"],
+            "private_key": _secrets["connections"]["gsheets"]["private_key"],
+            "client_email": _secrets["connections"]["gsheets"]["client_email"],
+            "client_id": _secrets["connections"]["gsheets"]["client_id"],
+            "auth_uri": _secrets["connections"]["gsheets"]["auth_uri"],
+            "token_uri": _secrets["connections"]["gsheets"]["token_uri"],
+            "auth_provider_x509_cert_url": _secrets["connections"]["gsheets"]["auth_provider_x509_cert_url"],
+            "client_x509_cert_url": _secrets["connections"]["gsheets"]["client_x509_cert_url"]
         })
-        spreadsheet_key = secrets["connections"]["gsheets"]["spreadsheet"]
+        spreadsheet_key = _secrets["connections"]["gsheets"]["spreadsheet"]
         
         all_data = {}
-        for cmp_symbol in secrets["connections"]["gsheets"]["worksheets"].values():
+        for cmp_symbol in _secrets["connections"]["gsheets"]["worksheets"].values():
             sheet = client.open_by_key(spreadsheet_key).worksheet(cmp_symbol)
             data = sheet.get_all_values()
             df = pd.DataFrame(data)
