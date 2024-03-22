@@ -87,10 +87,11 @@ def main():
     res = all_data[selected_tab] if selected_tab != 'Summary' else all_data
     if 'last_analysis_time' not in st.session_state:
         st.session_state.last_analysis_time = time.time()
+    sum_title = st.empty()
     summary_place = st.empty()
     total_place = st.empty()
     if selected_tab == 'Summary':
-        st.title('Summary')
+        sum_title.title('Summary')
         
         while True:
             summary = pd.DataFrame(columns=['ETF','Down%', 'CMP', 'LB','Amount', 'Qty'])
