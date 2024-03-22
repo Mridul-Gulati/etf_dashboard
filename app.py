@@ -85,6 +85,7 @@ def main():
     clear = st.sidebar.button("Clear Cache")
     if clear:
         st.cache_data.clear()
+        st.rerun()
     if "selected_tab" not in st.session_state:
         st.session_state["selected_tab"] = 0
     res = all_data[selected_tab] if selected_tab != 'Summary' else all_data
