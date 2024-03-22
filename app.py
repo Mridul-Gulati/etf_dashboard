@@ -9,6 +9,7 @@ import math
 import datetime
 from datetime import timedelta
 
+st.cache_data.clear()
 # secrets = toml.load('secrets.toml')
 st.set_page_config(page_title="ETFDash", page_icon="📈", layout="wide")
 def highlight_gain_condition(s):
