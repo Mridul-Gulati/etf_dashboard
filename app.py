@@ -87,10 +87,11 @@ def main():
     res = all_data[selected_tab] if selected_tab != 'Summary' else all_data
     if 'last_analysis_time' not in st.session_state:
         st.session_state.last_analysis_time = time.time()
+    summary_place = st.empty()
+    total_place = st.empty()
     if selected_tab == 'Summary':
         st.title('Summary')
-        summary_place = st.empty()
-        total_place = st.empty()
+        
         while True:
             summary = pd.DataFrame(columns=['ETF','Down%', 'CMP', 'LB','Amount', 'Qty'])
             if time.time() - st.session_state.last_analysis_time >= 0 or selected_tab != st.session_state["selected_tab"]:
@@ -148,7 +149,8 @@ def main():
                 res_rounded = res.round(2)
                 format_dict = {'Price': '{:.2f}', 'CMP': '{:.2f}', 'Buy Value': '{:.2f}', 'Qty.': '{:.0f}',
                 'Current Value': '{:.2f}', 'Gain%': '{:.2f}', 'Amount': '{:.2f}'}
-
+                total_place = st.empty()
+                summary_place = st.empty()
                 styled_res = res_rounded.sort_values('Date').style.format(format_dict).apply(highlight_gain_condition, subset=['Gain%'], axis=0)
                 res_place.dataframe(styled_res)
                 # res_place.data_editor(styled_res,key = st.session_state.last_analysis_time, num_rows="dynamic")
