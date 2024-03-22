@@ -90,9 +90,12 @@ def main():
     sum_title = st.empty()
     summary_place = st.empty()
     total_place = st.empty()
+    title = st.empty()
+    res_place = st.empty()
     if selected_tab == 'Summary':
         sum_title.title('Summary')
-        
+        res_place = st.empty()
+        title = st.empty()
         while True:
             summary = pd.DataFrame(columns=['ETF','Down%', 'CMP', 'LB','Amount', 'Qty'])
             if time.time() - st.session_state.last_analysis_time >= 0 or selected_tab != st.session_state["selected_tab"]:
@@ -132,8 +135,6 @@ def main():
             res['Age'] = (datetime.datetime.now() - pd.to_datetime(res['Date'])).dt.days
         else:
             st.error("Columns 'Price' and/or 'Qty.' not found in the DataFrame.")
-        title = st.empty()
-        res_place = st.empty()
         while True:
             if time.time() - st.session_state.last_analysis_time >= 100 or selected_tab != st.session_state["selected_tab"]:
                 st.session_state.last_analysis_time = time.time()
