@@ -4,13 +4,12 @@ import streamlit as st
 import time
 import yfinance as yf
 from datetime import datetime
-import toml
 import math
 import datetime
 from datetime import timedelta
-secrets = toml.load('secrets.toml')
+# secrets = toml.load('secrets.toml')
 if "secrets" not in st.session_state:
-    st.session_state.secrets = secrets
+    st.session_state.secrets = st.secrets
 st.set_page_config(page_title="ETFDash", page_icon="📈", layout="wide")
 def highlight_gain_condition(s):
     if s.name == 'Gain%':
@@ -32,34 +31,35 @@ def highlight_single_gain(value):
     return 'background-color: %s' % color
 
 def fetch_data_from_google_sheets_d(_secrets):
-    try:
-        client = gspread.service_account_from_dict({
-            "type": _secrets["connections"]["gsheets_d"]["type"],
-            "project_id": _secrets["connections"]["gsheets_d"]["project_id"],
-            "private_key_id": _secrets["connections"]["gsheets_d"]["private_key_id"],
-            "private_key": _secrets["connections"]["gsheets_d"]["private_key"],
-            "client_email": _secrets["connections"]["gsheets_d"]["client_email"],
-            "client_id": _secrets["connections"]["gsheets_d"]["client_id"],
-            "auth_uri": _secrets["connections"]["gsheets_d"]["auth_uri"],
-            "token_uri": _secrets["connections"]["gsheets_d"]["token_uri"],
-            "auth_provider_x509_cert_url": _secrets["connections"]["gsheets_d"]["auth_provider_x509_cert_url"],
-            "client_x509_cert_url": _secrets["connections"]["gsheets_d"]["client_x509_cert_url"]
-        })
-        spreadsheet_key = _secrets["connections"]["gsheets_d"]["spreadsheet"]
+    with st.spinner("Fetching data from Google Sheets..."):
+        try:
+            client = gspread.service_account_from_dict({
+                "type": _secrets["connections"]["gsheets_d"]["type"],
+                "project_id": _secrets["connections"]["gsheets_d"]["project_id"],
+                "private_key_id": _secrets["connections"]["gsheets_d"]["private_key_id"],
+                "private_key": _secrets["connections"]["gsheets_d"]["private_key"],
+                "client_email": _secrets["connections"]["gsheets_d"]["client_email"],
+                "client_id": _secrets["connections"]["gsheets_d"]["client_id"],
+                "auth_uri": _secrets["connections"]["gsheets_d"]["auth_uri"],
+                "token_uri": _secrets["connections"]["gsheets_d"]["token_uri"],
+                "auth_provider_x509_cert_url": _secrets["connections"]["gsheets_d"]["auth_provider_x509_cert_url"],
+                "client_x509_cert_url": _secrets["connections"]["gsheets_d"]["client_x509_cert_url"]
+            })
+            spreadsheet_key = _secrets["connections"]["gsheets_d"]["spreadsheet"]
+            
+            all_data = {}
+            for cmp_symbol in _secrets["connections"]["gsheets"]["worksheets"].values():
+                sheet = client.open_by_key(spreadsheet_key).worksheet(cmp_symbol)
+                data = sheet.get_all_values()
+                df = pd.DataFrame(data)
+                df = pd.DataFrame(data[1:], columns=data[0])
+                all_data[cmp_symbol] = df
+            
+            return all_data
         
-        all_data = {}
-        for cmp_symbol in _secrets["connections"]["gsheets"]["worksheets"].values():
-            sheet = client.open_by_key(spreadsheet_key).worksheet(cmp_symbol)
-            data = sheet.get_all_values()
-            df = pd.DataFrame(data)
-            df = pd.DataFrame(data[1:], columns=data[0])
-            all_data[cmp_symbol] = df
-        
-        return all_data
-    
-    except Exception as e:
-        st.error(f"An error occurred: {e}")
-        st.stop()
+        except Exception as e:
+            st.error(f"An error occurred: {e}")
+            st.stop()
 
 def fetch_data_from_google_sheets(_secrets):
     with st.spinner("Fetching data from Google Sheets..."):

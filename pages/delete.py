@@ -1,19 +1,28 @@
 import gspread
 import streamlit as st
 from datetime import datetime
-import datetime
-
+import pandas as pd
 secrets = st.session_state.secrets
-
 try:
     all_data = st.session_state.all_data
 except:
     st.error("Please run the app from the main page.")
 selected_tab = st.selectbox("Select ETF", options=list(all_data.keys()), key='ETF')
-price = st.number_input("Price", value=0.0, key='Price')
-qty = st.number_input("Qty.", value=0.0, key='Qty.')
-if st.button("Add") and price > 0 and qty > 0:
-    with st.spinner("Adding..."):
+row_num = st.number_input("Number of rows to be deleted", value=0.0, key='Row Number')
+spreadsheet_id = secrets["connections"]["gsheets"]["spreadsheet"]
+def overwrite_worksheet_with_df(worksheet, df):
+    try:
+        worksheet.clear()
+
+        values = df.values.tolist()
+
+        worksheet.update("A1", values)
+    except Exception as e:
+        st.error(f"An error occurred: {e}")
+
+# Main code
+if st.button("Delete") and row_num > 0:
+    with st.spinner("Deleting..."):
         try:
             client = gspread.service_account_from_dict({
                 "type": secrets["connections"]["gsheets"]["type"],
@@ -27,12 +36,20 @@ if st.button("Add") and price > 0 and qty > 0:
                 "auth_provider_x509_cert_url": secrets["connections"]["gsheets"]["auth_provider_x509_cert_url"],
                 "client_x509_cert_url": secrets["connections"]["gsheets"]["client_x509_cert_url"]
             })
-            spreadsheet_key = secrets["connections"]["gsheets"]["spreadsheet"]
-            worksheet_name = secrets["connections"]["gsheets"]["worksheets"][selected_tab]
-            sheet = client.open_by_key(spreadsheet_key).worksheet(worksheet_name)
+
+            # Open the spreadsheet
+            spreadsheet = client.open_by_key(spreadsheet_id)
+
+            worksheet = spreadsheet.worksheet(selected_tab)
+
+            # Get all values as DataFrame
+            df = pd.DataFrame(worksheet.get_all_values(), columns=None)
+
+            df = df[:-int(row_num)]
+
+            overwrite_worksheet_with_df(worksheet, df)
+
+            # Provide success message
+            st.success(f"Deleted {row_num} rows successfully from the bottom of the worksheet '{selected_tab}'.")
         except Exception as e:
             st.error(f"An error occurred: {e}")
-            st.stop()
-    row_data = [str(datetime.date.today()), qty, price]
-    sheet.append_row(row_data)
-    st.success("Added successfully!")
