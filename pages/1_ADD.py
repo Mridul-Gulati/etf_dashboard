@@ -2,6 +2,8 @@ import gspread
 import streamlit as st
 from datetime import datetime
 import datetime
+from streamlit_extras.switch_page_button import switch_page
+
 
 secrets = st.session_state.secrets
 
@@ -58,3 +60,4 @@ if st.button("Add") and price > 0 and qty > 0:
     row_data = [str(datetime.date.today()), qty, price]
     sheet.append_row(row_data)
     st.success("Added successfully!")
+    switch_page("app")

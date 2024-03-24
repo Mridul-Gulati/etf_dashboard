@@ -10,7 +10,7 @@ title = st.empty()
 df_place = st.empty()
 res_place = st.empty()
 st.session_state.last_analysis_time = time.time() - 110
-res = st.session_state.all_data["MAFANG"]
+res = st.session_state.all_data["MID150BEES"]
 secrets = st.session_state.secrets
 if 'res' not in st.session_state:
     st.session_state.res = res
@@ -69,13 +69,13 @@ while True:
     if time.time() - st.session_state.last_analysis_time >= 100:
         st.session_state.last_analysis_time = time.time()
 
-        st.session_state.res['CMP'] = round(get_cmp_price(secrets["connections"]["gsheets"]["worksheets"]['MAFANG']),2)
+        st.session_state.res['CMP'] = round(get_cmp_price(secrets["connections"]["gsheets"]["worksheets"]['MID150BEES']),2)
         st.session_state.res['Current Value'] = st.session_state.res['Qty.'] * st.session_state.res['CMP']
         st.session_state.res['Gain%'] = round(((res['Current Value'] - st.session_state.res['Buy Value']) / st.session_state.res['Buy Value']) * 100,2)
         st.session_state.res['Amount'] = st.session_state.res['Current Value'] - st.session_state.res['Buy Value']
         # st.session_state.res = res
         title.title('')
-        title.title(f'Data for MAFANG')
+        title.title(f'Data for MID150BEES')
         res_place.text('')
         res_rounded = st.session_state.res.round(2)
         format_dict = {'Total Investment': '{:.2f}', 'Current Value': '{:.2f}', 'ROI': '{:.2f}', 'Gain': '{:.0f}'}

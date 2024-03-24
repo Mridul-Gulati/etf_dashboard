@@ -4,3 +4,4 @@ streamlit==1.30.0
 yfinance==0.2.36
 gspread
 pandas
+streamlit_extras
