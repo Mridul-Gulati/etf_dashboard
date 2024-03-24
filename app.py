@@ -7,6 +7,7 @@ from datetime import datetime
 import math
 import datetime
 from datetime import timedelta
+
 # secrets = toml.load('secrets.toml')
 if "secrets" not in st.session_state:
     st.session_state.secrets = st.secrets
@@ -107,13 +108,16 @@ if "selected_user" not in st.session_state:
 user = st.selectbox("Select User",options = [None,'Amit','Deepti'])
 if 'all_data' not in st.session_state:
     st.session_state.all_data = 0
-
+if 'user' not in st.session_state:
+    st.session_state.user = 0
 if user == 'Amit':
-    all_data = fetch_data_from_google_sheets(secrets)
+    all_data = fetch_data_from_google_sheets(st.session_state.secrets)
     st.session_state.all_data = all_data
+    st.session_state.user = 'Amit'
 elif user == 'Deepti':
-    all_data_d = fetch_data_from_google_sheets_d(secrets)
+    all_data_d = fetch_data_from_google_sheets_d(st.session_state.secrets)
     st.session_state.all_data = all_data_d
+    st.session_state.user = 'Deepti'
 if user:
     if 'last_analysis_time' not in st.session_state:
         st.session_state.last_analysis_time = time.time()

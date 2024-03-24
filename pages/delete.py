@@ -9,7 +9,10 @@ except:
     st.error("Please run the app from the main page.")
 selected_tab = st.selectbox("Select ETF", options=list(all_data.keys()), key='ETF')
 row_num = st.number_input("Number of rows to be deleted", value=0.0, key='Row Number')
-spreadsheet_id = secrets["connections"]["gsheets"]["spreadsheet"]
+if st.session_state.user == 'Amit':
+    spreadsheet_id = secrets["connections"]["gsheets"]["spreadsheet"]
+else:
+    spreadsheet_id = secrets["connections"]["gsheets_d"]["spreadsheet"]
 def overwrite_worksheet_with_df(worksheet, df):
     try:
         worksheet.clear()
@@ -53,3 +56,4 @@ if st.button("Delete") and row_num > 0:
             st.success(f"Deleted {row_num} rows successfully from the bottom of the worksheet '{selected_tab}'.")
         except Exception as e:
             st.error(f"An error occurred: {e}")
+        
