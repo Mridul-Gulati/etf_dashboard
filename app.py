@@ -6,11 +6,10 @@ import yfinance as yf
 from datetime import datetime
 import math
 import datetime
-import toml
 
-secrets = toml.load('secrets.toml')
+# secrets = toml.load('secrets.toml')
 if "secrets" not in st.session_state:
-    st.session_state.secrets = secrets
+    st.session_state.secrets = st.secrets
 # st.set_page_config(page_title="ETFDash", page_icon="📈", layout="wide")
 
 def highlight_gain_condition(s):

@@ -78,8 +78,8 @@ while True:
         title.title(f'Data for CPSEETF')
         res_place.text('')
         res_rounded = st.session_state.res.round(2)
-        format_dict = {'Total Investment': '{:.2f}', 'Current Value': '{:.2f}', 'ROI': '{:.2f}', 'Gain': '{:.0f}'}
-
+        format_dict1 = {'Total Investment': '{:.2f}', 'Current Value': '{:.2f}', 'ROI': '{:.2f}', 'Gain': '{:.0f}'}
+        format_dict2 = {'Price': '{:.2f}', 'Qty.': '{:.2f}', 'CMP': '{:.2f}', 'Gain%': '{:.2f}', 'Amount': '{:.2f}', 'Buy Value': '{:.2f}', 'Current Value': '{:.2f}'}
         total_place = st.empty()
         summary_place = st.empty()
         buy_value = st.session_state.res['Buy Value'].sum()
@@ -87,7 +87,7 @@ while True:
         roi = round(((current_value - buy_value) / buy_value) * 100,2)
         gain = current_value - buy_value
         df = pd.DataFrame({'Total Investment': [buy_value], 'Current Value': [current_value], 'ROI': [roi], 'Gain': [gain]})
-        styled_df = df.style.format(format_dict).apply(highlight_condition, axis=0)
+        styled_df = df.style.format(format_dict1).apply(highlight_condition, axis=0)
         df_place.dataframe(styled_df)
-        styled_res = res_rounded.sort_values('Date').style.format(format_dict).apply(highlight_gain_condition, subset=['Gain%'], axis=0)
+        styled_res = res_rounded.sort_values('Date').style.format(format_dict2).apply(highlight_gain_condition, subset=['Gain%'], axis=0)
         res_place.dataframe(styled_res)
