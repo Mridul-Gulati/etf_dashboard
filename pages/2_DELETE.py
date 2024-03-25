@@ -32,61 +32,120 @@ def overwrite_worksheet_with_df(worksheet, df):
 # Main code
 if st.button("Delete") and row_num > 0:
     with st.spinner("Deleting..."):
-        try:
-            client = gspread.service_account_from_dict({
-                "type": secrets["connections"]["gsheets"]["type"],
-                "project_id": secrets["connections"]["gsheets"]["project_id"],
-                "private_key_id": secrets["connections"]["gsheets"]["private_key_id"],
-                "private_key": secrets["connections"]["gsheets"]["private_key"],
-                "client_email": secrets["connections"]["gsheets"]["client_email"],
-                "client_id": secrets["connections"]["gsheets"]["client_id"],
-                "auth_uri": secrets["connections"]["gsheets"]["auth_uri"],
-                "token_uri": secrets["connections"]["gsheets"]["token_uri"],
-                "auth_provider_x509_cert_url": secrets["connections"]["gsheets"]["auth_provider_x509_cert_url"],
-                "client_x509_cert_url": secrets["connections"]["gsheets"]["client_x509_cert_url"]
-            })
+        if st.session_state.user == 'Amit':
+            try:
+                client = gspread.service_account_from_dict({
+                    "type": secrets["connections"]["gsheets"]["type"],
+                    "project_id": secrets["connections"]["gsheets"]["project_id"],
+                    "private_key_id": secrets["connections"]["gsheets"]["private_key_id"],
+                    "private_key": secrets["connections"]["gsheets"]["private_key"],
+                    "client_email": secrets["connections"]["gsheets"]["client_email"],
+                    "client_id": secrets["connections"]["gsheets"]["client_id"],
+                    "auth_uri": secrets["connections"]["gsheets"]["auth_uri"],
+                    "token_uri": secrets["connections"]["gsheets"]["token_uri"],
+                    "auth_provider_x509_cert_url": secrets["connections"]["gsheets"]["auth_provider_x509_cert_url"],
+                    "client_x509_cert_url": secrets["connections"]["gsheets"]["client_x509_cert_url"]
+                })
 
-            # Open the spreadsheet
-            spreadsheet = client.open_by_key(spreadsheet_id)
+                # Open the spreadsheet
+                spreadsheet = client.open_by_key(spreadsheet_id)
 
-            worksheet = spreadsheet.worksheet(selected_tab)
+                worksheet = spreadsheet.worksheet(selected_tab)
 
-            # Get all values as DataFrame
-            df = pd.DataFrame(worksheet.get_all_values(), columns=None)
-            last_rows = df.tail(int(row_num)).values.tolist()
-            for row in last_rows:
-                try:
-                    client = gspread.service_account_from_dict({
-                        "type": secrets["connections"]["gsheets_sell"]["type"],
-                        "project_id": secrets["connections"]["gsheets_sell"]["project_id"],
-                        "private_key_id": secrets["connections"]["gsheets_sell"]["private_key_id"],
-                        "private_key": secrets["connections"]["gsheets_sell"]["private_key"],
-                        "client_email": secrets["connections"]["gsheets_sell"]["client_email"],
-                        "client_id": secrets["connections"]["gsheets_sell"]["client_id"],
-                        "auth_uri": secrets["connections"]["gsheets_sell"]["auth_uri"],
-                        "token_uri": secrets["connections"]["gsheets_sell"]["token_uri"],
-                        "auth_provider_x509_cert_url": secrets["connections"]["gsheets_sell"]["auth_provider_x509_cert_url"],
-                        "client_x509_cert_url": secrets["connections"]["gsheets_sell"]["client_x509_cert_url"]
-                    })
-                    spreadsheet_key = secrets["connections"]["gsheets_sell"]["spreadsheet"]
-                    sheet = client.open_by_key(spreadsheet_key).get_worksheet(0)
-                except Exception as e:
-                    st.error(f"An error occurred: {e}")
-                    st.stop()
-                column_a_values = sheet.col_values(1)
-                last_row_index = len(column_a_values) + 1
-                date_obj = datetime.strptime(row[0], "%Y-%m-%d")
-                formatted_date = date_obj.strftime("%d-%b-%y")
-                data = [str(formatted_date),selected_tab,selected_tab, float(row[2]), float(row[1]), '',float(row[1])*float(row[2]),sell_price,str(datetime.now().strftime("%d-%b-%y")), st.session_state.total_invested - (float(row[1])*float(row[2]))]
-                sheet.update(f"A{last_row_index}:J{last_row_index}", [data])
-                st.session_state.total_invested = st.session_state.total_invested - (float(row[1])*float(row[2]))
-                # sheet.update(f"N{last_row_index}", [50/int(row_num)])
-            df = df[:-int(row_num)]
-            overwrite_worksheet_with_df(worksheet, df)
+                # Get all values as DataFrame
+                df = pd.DataFrame(worksheet.get_all_values(), columns=None)
+                last_rows = df.tail(int(row_num)).values.tolist()
+                for row in last_rows:
+                    try:
+                        client = gspread.service_account_from_dict({
+                            "type": secrets["connections"]["gsheets_sell"]["type"],
+                            "project_id": secrets["connections"]["gsheets_sell"]["project_id"],
+                            "private_key_id": secrets["connections"]["gsheets_sell"]["private_key_id"],
+                            "private_key": secrets["connections"]["gsheets_sell"]["private_key"],
+                            "client_email": secrets["connections"]["gsheets_sell"]["client_email"],
+                            "client_id": secrets["connections"]["gsheets_sell"]["client_id"],
+                            "auth_uri": secrets["connections"]["gsheets_sell"]["auth_uri"],
+                            "token_uri": secrets["connections"]["gsheets_sell"]["token_uri"],
+                            "auth_provider_x509_cert_url": secrets["connections"]["gsheets_sell"]["auth_provider_x509_cert_url"],
+                            "client_x509_cert_url": secrets["connections"]["gsheets_sell"]["client_x509_cert_url"]
+                        })
+                        spreadsheet_key = secrets["connections"]["gsheets_sell"]["spreadsheet"]
+                        sheet = client.open_by_key(spreadsheet_key).get_worksheet(0)
+                    except Exception as e:
+                        st.error(f"An error occurred: {e}")
+                        st.stop()
+                    column_a_values = sheet.col_values(1)
+                    last_row_index = len(column_a_values) + 1
+                    date_obj = datetime.strptime(row[0], "%Y-%m-%d")
+                    formatted_date = date_obj.strftime("%d-%b-%y")
+                    data = [str(formatted_date),selected_tab,selected_tab, float(row[2]), float(row[1]), '',float(row[1])*float(row[2]),sell_price,str(datetime.now().strftime("%d-%b-%y")), st.session_state.total_invested - (float(row[1])*float(row[2]))]
+                    sheet.update(f"A{last_row_index}:J{last_row_index}", [data])
+                    st.session_state.total_invested = st.session_state.total_invested - (float(row[1])*float(row[2]))
+                    sheet.update(f"N{last_row_index}", [[50/int(row_num)]])
+                df = df[:-int(row_num)]
+                overwrite_worksheet_with_df(worksheet, df)
 
-            # Provide success message
-            st.success(f"Deleted {row_num} rows successfully from the bottom of the worksheet '{selected_tab}'.")
-            switch_page("app")
-        except Exception as e:
-            st.error(f"An error occurred: {e}")
+                # Provide success message
+                st.success(f"Deleted {row_num} rows successfully from the bottom of the worksheet '{selected_tab}'.")
+                switch_page("app")
+            except Exception as e:
+                st.error(f"An error occurred: {e}")
+        else:
+            try:
+                client = gspread.service_account_from_dict({
+                    "type": secrets["connections"]["gsheets_d"]["type"],
+                    "project_id": secrets["connections"]["gsheets_d"]["project_id"],
+                    "private_key_id": secrets["connections"]["gsheets_d"]["private_key_id"],
+                    "private_key": secrets["connections"]["gsheets_d"]["private_key"],
+                    "client_email": secrets["connections"]["gsheets_d"]["client_email"],
+                    "client_id": secrets["connections"]["gsheets_d"]["client_id"],
+                    "auth_uri": secrets["connections"]["gsheets_d"]["auth_uri"],
+                    "token_uri": secrets["connections"]["gsheets_d"]["token_uri"],
+                    "auth_provider_x509_cert_url": secrets["connections"]["gsheets_d"]["auth_provider_x509_cert_url"],
+                    "client_x509_cert_url": secrets["connections"]["gsheets_d"]["client_x509_cert_url"]
+                })
+
+                spreadsheet = client.open_by_key(spreadsheet_id)
+
+                worksheet = spreadsheet.worksheet(selected_tab)
+
+                # Get all values as DataFrame
+                df = pd.DataFrame(worksheet.get_all_values(), columns=None)
+                last_rows = df.tail(int(row_num)).values.tolist()
+                for row in last_rows:
+                    try:
+                        client = gspread.service_account_from_dict({
+                            "type": secrets["connections"]["gsheets_sell_d"]["type"],
+                            "project_id": secrets["connections"]["gsheets_sell_d"]["project_id"],
+                            "private_key_id": secrets["connections"]["gsheets_sell_d"]["private_key_id"],
+                            "private_key": secrets["connections"]["gsheets_sell_d"]["private_key"],
+                            "client_email": secrets["connections"]["gsheets_sell_d"]["client_email"],
+                            "client_id": secrets["connections"]["gsheets_sell_d"]["client_id"],
+                            "auth_uri": secrets["connections"]["gsheets_sell_d"]["auth_uri"],
+                            "token_uri": secrets["connections"]["gsheets_sell_d"]["token_uri"],
+                            "auth_provider_x509_cert_url": secrets["connections"]["gsheets_sell_d"]["auth_provider_x509_cert_url"],
+                            "client_x509_cert_url": secrets["connections"]["gsheets_sell_d"]["client_x509_cert_url"]
+                        })
+                        spreadsheet_key = secrets["connections"]["gsheets_sell_d"]["spreadsheet"]
+                        sheet = client.open_by_key(spreadsheet_key).get_worksheet(0)
+                    except Exception as e:
+                        st.error(f"An error occurred: {e}")
+                        st.stop()
+                    column_a_values = sheet.col_values(1)
+                    last_row_index = len(column_a_values) + 1
+                    date_obj = datetime.strptime(row[0], "%Y-%m-%d")
+                    formatted_date = date_obj.strftime("%d-%b-%y")
+                    data = [str(formatted_date),selected_tab,selected_tab, float(row[2]), float(row[1]), '',float(row[1])*float(row[2]),sell_price,str(datetime.now().strftime("%d-%b-%y")), st.session_state.total_invested - (float(row[1])*float(row[2]))]
+                    sheet.update(f"A{last_row_index}:J{last_row_index}", [data])
+                    st.session_state.total_invested = st.session_state.total_invested - (float(row[1])*float(row[2]))
+                    print(st.session_state.total_invested)
+                    sheet.update(f"N{last_row_index}", [[50/int(row_num)]])
+                df = df[:-int(row_num)]
+                overwrite_worksheet_with_df(worksheet, df)
+
+                # Provide success message
+                st.success(f"Deleted {row_num} rows successfully from the bottom of the worksheet '{selected_tab}'.")
+                switch_page("app")
+            except Exception as e:
+                st.error(f"An error occurred: {e}")
         

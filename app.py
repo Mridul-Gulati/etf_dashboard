@@ -6,7 +6,6 @@ import yfinance as yf
 from datetime import datetime
 import math
 import datetime
-
 # secrets = toml.load('secrets.toml')
 if "secrets" not in st.session_state:
     st.session_state.secrets = st.secrets
@@ -143,7 +142,7 @@ if user:
             today = datetime.datetime.today().date()
             for stock in stocks:
                 time.sleep(1)
-                cmp = get_cmp_price(secrets["connections"]["gsheets"]["worksheets"][stock])
+                cmp = get_cmp_price(st.secrets["connections"]["gsheets"]["worksheets"][stock])
                 total_value =  ((st.session_state.all_data[stock]['Qty.'].str.replace(',','').astype(float)) * (st.session_state.all_data[stock]['Price']).astype(float)).sum() if not st.session_state.all_data[stock].empty else 0
                 total_invested += total_value
                 current_value =  ((st.session_state.all_data[stock]['Qty.'].str.replace(',','').astype(float)) * cmp).sum() if not st.session_state.all_data[stock].empty else 0
@@ -159,7 +158,7 @@ if user:
                 variable = round((amt * multi_fac)/100,2)
                 amount = int(amt + variable) if variable > 0 else 0
                 qty = math.ceil(amount / cmp)
-                if cmp < last_buy:
+                if cmp < last_buy and pnl <= 0:
                     new_res = pd.DataFrame({'ETF': [stock], 'Down%':[round(pnl*100,2)], 'CMP':[cmp], 'Amount': [amount], 'Qty': [qty], 'LB': [last_buy]})
                     summary = pd.concat([summary,new_res],ignore_index=True)
             if summary.empty:
