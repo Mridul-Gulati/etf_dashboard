@@ -6,6 +6,7 @@ import yfinance as yf
 from datetime import datetime
 import math
 import datetime
+
 # secrets = toml.load('secrets.toml')
 if "secrets" not in st.session_state:
     st.session_state.secrets = st.secrets
@@ -48,6 +49,68 @@ def fetch_data_from_google_sheets_d(_secrets):
                 "client_x509_cert_url": _secrets["connections"]["gsheets_d"]["client_x509_cert_url"]
             })
             spreadsheet_key = _secrets["connections"]["gsheets_d"]["spreadsheet"]
+            
+            all_data = {}
+            for cmp_symbol in _secrets["connections"]["gsheets"]["worksheets"].values():
+                sheet = client.open_by_key(spreadsheet_key).worksheet(cmp_symbol)
+                data = sheet.get_all_values()
+                df = pd.DataFrame(data)
+                df = pd.DataFrame(data[1:], columns=data[0])
+                all_data[cmp_symbol] = df
+            
+            return all_data
+        
+        except Exception as e:
+            st.error(f"An error occurred: {e}")
+            st.stop()
+
+def fetch_data_from_google_sheets_m(_secrets):
+    with st.spinner("Fetching data from Google Sheets..."):
+        try:
+            client = gspread.service_account_from_dict({
+                "type": _secrets["connections"]["gsheets_m"]["type"],
+                "project_id": _secrets["connections"]["gsheets_m"]["project_id"],
+                "private_key_id": _secrets["connections"]["gsheets_m"]["private_key_id"],
+                "private_key": _secrets["connections"]["gsheets_m"]["private_key"],
+                "client_email": _secrets["connections"]["gsheets_m"]["client_email"],
+                "client_id": _secrets["connections"]["gsheets_m"]["client_id"],
+                "auth_uri": _secrets["connections"]["gsheets_m"]["auth_uri"],
+                "token_uri": _secrets["connections"]["gsheets_m"]["token_uri"],
+                "auth_provider_x509_cert_url": _secrets["connections"]["gsheets_m"]["auth_provider_x509_cert_url"],
+                "client_x509_cert_url": _secrets["connections"]["gsheets_m"]["client_x509_cert_url"]
+            })
+            spreadsheet_key = _secrets["connections"]["gsheets_m"]["spreadsheet"]
+            
+            all_data = {}
+            for cmp_symbol in _secrets["connections"]["gsheets"]["worksheets"].values():
+                sheet = client.open_by_key(spreadsheet_key).worksheet(cmp_symbol)
+                data = sheet.get_all_values()
+                df = pd.DataFrame(data)
+                df = pd.DataFrame(data[1:], columns=data[0])
+                all_data[cmp_symbol] = df
+            
+            return all_data
+        
+        except Exception as e:
+            st.error(f"An error occurred: {e}")
+            st.stop()
+
+def fetch_data_from_google_sheets_h(_secrets):
+    with st.spinner("Fetching data from Google Sheets..."):
+        try:
+            client = gspread.service_account_from_dict({
+                "type": _secrets["connections"]["gsheets_h"]["type"],
+                "project_id": _secrets["connections"]["gsheets_h"]["project_id"],
+                "private_key_id": _secrets["connections"]["gsheets_h"]["private_key_id"],
+                "private_key": _secrets["connections"]["gsheets_h"]["private_key"],
+                "client_email": _secrets["connections"]["gsheets_h"]["client_email"],
+                "client_id": _secrets["connections"]["gsheets_h"]["client_id"],
+                "auth_uri": _secrets["connections"]["gsheets_h"]["auth_uri"],
+                "token_uri": _secrets["connections"]["gsheets_h"]["token_uri"],
+                "auth_provider_x509_cert_url": _secrets["connections"]["gsheets_h"]["auth_provider_x509_cert_url"],
+                "client_x509_cert_url": _secrets["connections"]["gsheets_h"]["client_x509_cert_url"]
+            })
+            spreadsheet_key = _secrets["connections"]["gsheets_h"]["spreadsheet"]
             
             all_data = {}
             for cmp_symbol in _secrets["connections"]["gsheets"]["worksheets"].values():
@@ -106,7 +169,7 @@ def get_cmp_price(cmp_symbol):
 
 
 
-user = st.selectbox("Select User",options = [None,'Amit','Deepti'])
+user = st.selectbox("Select User",options = [None,'Amit','Deepti','Mridul','Hemank'])
 if 'all_data' not in st.session_state:
     st.session_state.all_data = 0
 if 'user' not in st.session_state:
@@ -119,6 +182,14 @@ elif user == 'Deepti':
     all_data_d = fetch_data_from_google_sheets_d(st.session_state.secrets)
     st.session_state.all_data = all_data_d
     st.session_state.user = 'Deepti'
+elif user == 'Mridul':
+    all_data_m = fetch_data_from_google_sheets_m(st.session_state.secrets)
+    st.session_state.all_data = all_data_m
+    st.session_state.user = 'Mridul'
+elif user == 'Hemank':
+    all_data_h = fetch_data_from_google_sheets_h(st.session_state.secrets)
+    st.session_state.all_data = all_data_h
+    st.session_state.user = 'Hemank'
 
 if 'total_invested' not in st.session_state:
     st.session_state.total_invested = 0
@@ -137,6 +208,7 @@ if user:
         summary = pd.DataFrame(columns=['ETF','Down%', 'CMP', 'LB','Amount', 'Qty'])
         investment = pd.DataFrame(columns=['Total Investment','Current Value','ROI','Gain'])
         if time.time() - st.session_state.last_analysis_time >= 0:
+            print(1)
             st.session_state.last_analysis_time = time.time()
             stocks = list(st.session_state.all_data.keys())
             today = datetime.datetime.today().date()
@@ -154,7 +226,10 @@ if user:
                 pnl = (cmp-buy_price)/buy_price if buy_price != 0 else 0
                 multi_fac = -1*round(pnl*1000,2)
                 num_of_investments = st.session_state.all_data[stock].shape[0]
-                amt = 5000 * (num_of_investments - 1)//2 if num_of_investments > 1 else 5000
+                if st.session_state.user == 'Amit' or st.session_state.user == "Deepti":
+                    amt = 5000 * (num_of_investments - 1)//2 if num_of_investments > 1 else 5000
+                else:
+                    amt = 2500
                 variable = round((amt * multi_fac)/100,2)
                 amount = int(amt + variable) if variable > 0 else 0
                 qty = math.ceil(amount / cmp)
@@ -162,15 +237,15 @@ if user:
                     new_res = pd.DataFrame({'ETF': [stock], 'Down%':[round(pnl*100,2)], 'CMP':[cmp], 'Amount': [amount], 'Qty': [qty], 'LB': [last_buy]})
                     summary = pd.concat([summary,new_res],ignore_index=True)
             if summary.empty:
-                total = 0
-            else:
-                investment = pd.concat([investment,pd.DataFrame({'Total Investment':[total_invested],'Current Value':[total_current_value],'ROI':[round(((total_current_value - total_invested)/total_invested) * 100,2)],'Gain':[round(total_current_value - total_invested,2)]})],ignore_index=True)
-                res_rounded = investment.round(2)
-                format_dict = {'Total Investment': '{:.2f}', 'Current Value': '{:.2f}', 'ROI': '{:.2f}', 'Gain': '{:.0f}'}
-                styled_res = res_rounded.style.format(format_dict).apply(highlight_gain_condition, axis=0)
-                total = summary['Amount'].sum()
-                # total_invested_place.success('Total Invested: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + str(round(total_invested,2)) + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + 'Current Value: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + str(round(total_current_value)))
-                total_invested_place.dataframe(styled_res)
-                st.session_state.total_invested = total_invested
-                summary_place.dataframe(summary.sort_values('Down%'))
-                total_place.success('Total Amount: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + str(total))
+                total = 0   
+            
+            investment = pd.concat([investment,pd.DataFrame({'Total Investment':[total_invested],'Current Value':[total_current_value],'ROI':[round(((total_current_value - total_invested)/total_invested) * 100,2)],'Gain':[round(total_current_value - total_invested,2)]})],ignore_index=True)
+            res_rounded = investment.round(2)
+            format_dict = {'Total Investment': '{:.2f}', 'Current Value': '{:.2f}', 'ROI': '{:.2f}', 'Gain': '{:.0f}'}
+            styled_res = res_rounded.style.format(format_dict).apply(highlight_gain_condition, axis=0)
+            total = summary['Amount'].sum()
+            # total_invested_place.success('Total Invested: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + str(round(total_invested,2)) + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + 'Current Value: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + str(round(total_current_value)))
+            total_invested_place.dataframe(styled_res)
+            st.session_state.total_invested = total_invested
+            summary_place.dataframe(summary.sort_values('Down%'))
+            total_place.success('Total Amount: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + str(total))

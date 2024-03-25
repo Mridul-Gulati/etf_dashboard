@@ -37,7 +37,7 @@ if st.button("Add") and price > 0 and qty > 0:
             except Exception as e:
                 st.error(f"An error occurred: {e}")
                 st.stop()
-        else:
+        elif st.session_state.user == 'Deepti':
             try:
                 client = gspread.service_account_from_dict({
                     "type": secrets["connections"]["gsheets_d"]["type"],
@@ -52,6 +52,46 @@ if st.button("Add") and price > 0 and qty > 0:
                     "client_x509_cert_url": secrets["connections"]["gsheets_d"]["client_x509_cert_url"]
                 })
                 spreadsheet_key = secrets["connections"]["gsheets_d"]["spreadsheet"]
+                worksheet_name = secrets["connections"]["gsheets"]["worksheets"][selected_tab]
+                sheet = client.open_by_key(spreadsheet_key).worksheet(worksheet_name)
+            except Exception as e:
+                st.error(f"An error occurred: {e}")
+                st.stop()
+        elif st.session_state.user == "Mridul":
+            try:
+                client = gspread.service_account_from_dict({
+                    "type": secrets["connections"]["gsheets_m"]["type"],
+                    "project_id": secrets["connections"]["gsheets_m"]["project_id"],
+                    "private_key_id": secrets["connections"]["gsheets_m"]["private_key_id"],
+                    "private_key": secrets["connections"]["gsheets_m"]["private_key"],
+                    "client_email": secrets["connections"]["gsheets_m"]["client_email"],
+                    "client_id": secrets["connections"]["gsheets_m"]["client_id"],
+                    "auth_uri": secrets["connections"]["gsheets_m"]["auth_uri"],
+                    "token_uri": secrets["connections"]["gsheets_m"]["token_uri"],
+                    "auth_provider_x509_cert_url": secrets["connections"]["gsheets_m"]["auth_provider_x509_cert_url"],
+                    "client_x509_cert_url": secrets["connections"]["gsheets_m"]["client_x509_cert_url"]
+                })
+                spreadsheet_key = secrets["connections"]["gsheets_m"]["spreadsheet"]
+                worksheet_name = secrets["connections"]["gsheets"]["worksheets"][selected_tab]
+                sheet = client.open_by_key(spreadsheet_key).worksheet(worksheet_name)
+            except Exception as e:
+                st.error(f"An error occurred: {e}")
+                st.stop()
+        elif st.session_state.user == "Hemank":
+            try:
+                client = gspread.service_account_from_dict({
+                    "type": secrets["connections"]["gsheets_h"]["type"],
+                    "project_id": secrets["connections"]["gsheets_h"]["project_id"],
+                    "private_key_id": secrets["connections"]["gsheets_h"]["private_key_id"],
+                    "private_key": secrets["connections"]["gsheets_h"]["private_key"],
+                    "client_email": secrets["connections"]["gsheets_h"]["client_email"],
+                    "client_id": secrets["connections"]["gsheets_h"]["client_id"],
+                    "auth_uri": secrets["connections"]["gsheets_h"]["auth_uri"],
+                    "token_uri": secrets["connections"]["gsheets_h"]["token_uri"],
+                    "auth_provider_x509_cert_url": secrets["connections"]["gsheets_h"]["auth_provider_x509_cert_url"],
+                    "client_x509_cert_url": secrets["connections"]["gsheets_h"]["client_x509_cert_url"]
+                })
+                spreadsheet_key = secrets["connections"]["gsheets_h"]["spreadsheet"]
                 worksheet_name = secrets["connections"]["gsheets"]["worksheets"][selected_tab]
                 sheet = client.open_by_key(spreadsheet_key).worksheet(worksheet_name)
             except Exception as e:
