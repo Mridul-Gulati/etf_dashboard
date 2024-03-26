@@ -20,7 +20,7 @@ def highlight_gain_condition(s):
         return s.apply(lambda x: highlight_2(x))
 
 def highlight_gain_condition2(s):
-    if s.name == 'Gain':
+    if s.name == 'Gain%':
         return s.apply(lambda x: highlight_gain(x))
 
 def highlight_gain(x):
