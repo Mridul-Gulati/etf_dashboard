@@ -6,7 +6,6 @@ import yfinance as yf
 from datetime import datetime
 import math
 import datetime
-
 # secrets = toml.load('secrets.toml')
 if "secrets" not in st.session_state:
     st.session_state.secrets = st.secrets
@@ -200,13 +199,14 @@ if user:
     total_invested_place = st.empty()
     summary_place = st.empty()
     total_place = st.empty()
-    
+    resultant_df_place = st.empty()
     sum_title.title('Summary')
     while True:
         total_invested = 0
         total_current_value = 0
-        summary = pd.DataFrame(columns=['ETF','Down%', 'CMP', 'LB','Amount', 'Qty'])
+        summary = pd.DataFrame(columns=['ETF','Down%', 'Down_LB%', 'CMP', 'LB','Amount', 'Qty'])
         investment = pd.DataFrame(columns=['Total Investment','Current Value','ROI','Gain'])
+        resultant_df = pd.DataFrame(columns=['ETF', 'Price', 'Qty.', 'Buy Value', 'Age', 'CMP', 'Current Value', 'Gain%', 'Amount'])
         if time.time() - st.session_state.last_analysis_time >= 0:
             print(1)
             st.session_state.last_analysis_time = time.time()
@@ -214,12 +214,28 @@ if user:
             today = datetime.datetime.today().date()
             for stock in stocks:
                 time.sleep(1)
+                up_df = st.session_state.all_data[stock]
+                up_df['ETF'] = [stock] * up_df.shape[0]
+                up_df['Price'] = up_df['Price'].str.replace(',', '').astype(float) if up_df['Price'].dtype == 'object' else up_df['Price']
+                up_df['Qty.'] = up_df['Qty.'].str.replace(',', '').astype(float) if up_df['Qty.'].dtype == 'object' else up_df['Qty.']
+                up_df['Buy Value'] = up_df['Price'] * up_df['Qty.']
+                up_df['Age'] = (datetime.datetime.now() - pd.to_datetime(up_df['Date'])).dt.days
+                up_df['CMP'] = round(get_cmp_price(st.secrets["connections"]["gsheets"]["worksheets"][stock]),2)
+                up_df['Current Value'] = up_df['Qty.'] * up_df['CMP']
+                up_df['Gain%'] = round(((up_df['Current Value'] - up_df['Buy Value']) / up_df['Buy Value']) * 100,2)
+                up_df['Amount'] = up_df['Current Value'] - up_df['Buy Value']
+                filtered_rows = up_df[up_df['Gain%'] >= 1]
+                for etf_name in filtered_rows['ETF'].unique():
+                    etf_rows = filtered_rows[filtered_rows['ETF'] == etf_name]
+                    etf_rows.iloc[1:, 3] = ''  # Set ETF name to empty string for all rows except the first
+                    resultant_df = pd.concat([resultant_df, etf_rows], ignore_index=True)
                 cmp = get_cmp_price(st.secrets["connections"]["gsheets"]["worksheets"][stock])
-                total_value =  ((st.session_state.all_data[stock]['Qty.'].str.replace(',','').astype(float)) * (st.session_state.all_data[stock]['Price']).astype(float)).sum() if not st.session_state.all_data[stock].empty else 0
+                # total_value =  ((st.session_state.all_data[stock]['Qty.'].str.replace(',','').astype(float)) * (st.session_state.all_data[stock]['Price']).astype(float)).sum() if not st.session_state.all_data[stock].empty else 0
+                total_value =  ((st.session_state.all_data[stock]['Qty.']) * (st.session_state.all_data[stock]['Price']).astype(float)).sum() if not st.session_state.all_data[stock].empty else 0
                 total_invested += total_value
-                current_value =  ((st.session_state.all_data[stock]['Qty.'].str.replace(',','').astype(float)) * cmp).sum() if not st.session_state.all_data[stock].empty else 0
+                current_value =  ((st.session_state.all_data[stock]['Qty.']) * cmp).sum() if not st.session_state.all_data[stock].empty else 0
                 total_current_value += current_value
-                total_qty = (st.session_state.all_data[stock]['Qty.'].str.replace(',','').astype(float)).sum() if not st.session_state.all_data[stock].empty else 1
+                total_qty = (st.session_state.all_data[stock]['Qty.']).sum() if not st.session_state.all_data[stock].empty else 1
                 buy_price = round(total_value / total_qty,2)
                 st.session_state.all_data[stock]['Price'] = pd.to_numeric(st.session_state.all_data[stock]['Price'], errors='coerce')
                 last_buy = st.session_state.all_data[stock].sort_values('Date')['Price'].values[-1] if not st.session_state.all_data[stock].empty else 0
@@ -233,8 +249,9 @@ if user:
                 variable = round((amt * multi_fac)/100,2)
                 amount = int(amt + variable) if variable > 0 else 0
                 qty = math.ceil(amount / cmp)
-                if cmp < last_buy and pnl <= 0:
-                    new_res = pd.DataFrame({'ETF': [stock], 'Down%':[round(pnl*100,2)], 'CMP':[cmp], 'Amount': [amount], 'Qty': [qty], 'LB': [last_buy]})
+                down_lb = round((cmp - last_buy)/last_buy * 100,2) if last_buy != 0 else 0
+                if cmp < last_buy and pnl < 0:
+                    new_res = pd.DataFrame({'ETF': [stock], 'Down%':[round(pnl*100,2)], 'Down_LB%':[down_lb],'CMP':[cmp], 'Amount': [amount], 'Qty': [qty], 'LB': [last_buy]})
                     summary = pd.concat([summary,new_res],ignore_index=True)
             if summary.empty:
                 total = 0   
@@ -242,6 +259,7 @@ if user:
             investment = pd.concat([investment,pd.DataFrame({'Total Investment':[total_invested],'Current Value':[total_current_value],'ROI':[round(((total_current_value - total_invested)/total_invested) * 100,2)],'Gain':[round(total_current_value - total_invested,2)]})],ignore_index=True)
             res_rounded = investment.round(2)
             format_dict = {'Total Investment': '{:.2f}', 'Current Value': '{:.2f}', 'ROI': '{:.2f}', 'Gain': '{:.0f}'}
+            format_dict2 = {'Price': '{:.2f}', 'Qty.': '{:.2f}', 'CMP': '{:.2f}', 'Gain%': '{:.2f}', 'Amount': '{:.2f}', 'Buy Value': '{:.2f}', 'Current Value': '{:.2f}'}
             styled_res = res_rounded.style.format(format_dict).apply(highlight_gain_condition, axis=0)
             total = summary['Amount'].sum()
             # total_invested_place.success('Total Invested: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + str(round(total_invested,2)) + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + 'Current Value: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + str(round(total_current_value)))
@@ -249,3 +267,6 @@ if user:
             st.session_state.total_invested = total_invested
             summary_place.dataframe(summary.sort_values('Down%'))
             total_place.success('Total Amount: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + str(total))
+            resultant_df_round = resultant_df.round(2)
+            styled_res_df = resultant_df_round.style.format(format_dict2).apply(highlight_gain_condition, subset=['Gain%'], axis=0)
+            resultant_df_place.dataframe(styled_res_df)
