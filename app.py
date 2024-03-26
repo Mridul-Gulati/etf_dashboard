@@ -19,6 +19,17 @@ def highlight_gain_condition(s):
     else:
         return s.apply(lambda x: highlight_2(x))
 
+def highlight_gain_condition2(s):
+    if s.name == 'Gain':
+        return s.apply(lambda x: highlight_gain(x))
+
+def highlight_gain(x):
+    if 2 < x <= 3:
+        color = 'rgba(255, 140, 0, 1)'  # Orange with 50% opacity
+    elif 3 < x:
+        color = 'rgba(63, 255, 0,1)'  # Green with 50% opacity
+    return 'background-color: %s' % color
+
 def highlight(x):
     color = 'rgba(139,190,27,1)'
     return 'background-color: %s' % color
@@ -224,7 +235,7 @@ if user:
                 up_df['Current Value'] = up_df['Qty.'] * up_df['CMP']
                 up_df['Gain%'] = round(((up_df['Current Value'] - up_df['Buy Value']) / up_df['Buy Value']) * 100,2)
                 up_df['Amount'] = up_df['Current Value'] - up_df['Buy Value']
-                filtered_rows = up_df[up_df['Gain%'] >= 1]
+                filtered_rows = up_df[up_df['Gain%'] > 3]
                 for etf_name in filtered_rows['ETF'].unique():
                     etf_rows = filtered_rows[filtered_rows['ETF'] == etf_name]
                     etf_rows.iloc[1:, 3] = ''  # Set ETF name to empty string for all rows except the first
@@ -265,8 +276,8 @@ if user:
             # total_invested_place.success('Total Invested: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + str(round(total_invested,2)) + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + 'Current Value: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + str(round(total_current_value)))
             total_invested_place.dataframe(styled_res)
             st.session_state.total_invested = total_invested
-            summary_place.dataframe(summary.sort_values('Down%'))
+            summary_place.dataframe(summary.sort_values('Down_LB%'))
             total_place.success('Total Amount: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + str(total))
             resultant_df_round = resultant_df.round(2)
-            styled_res_df = resultant_df_round.style.format(format_dict2).apply(highlight_gain_condition, subset=['Gain%'], axis=0)
+            styled_res_df = resultant_df_round.style.format(format_dict2).apply(highlight_gain_condition2, subset=['Gain%'], axis=0)
             resultant_df_place.dataframe(styled_res_df)

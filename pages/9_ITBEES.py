@@ -34,7 +34,7 @@ def highlight(x):
     return 'background-color: %s' % color
 def highlight_2(x):
     color = 'rgba(255, 140, 0, 1)'
-
+    return 'background-color: %s' % color
 def highlight_single_gain(value):
     if value < 0:
         color = 'rgba(255, 0, 0, 0.8)'  # Red with 50% opacity
