@@ -24,9 +24,9 @@ def highlight_gain_condition2(s):
         return s.apply(lambda x: highlight_gain(x))
 
 def highlight_gain(x):
-    if 2 < x <= 3:
+    if 3 < x <= 4:
         color = 'rgba(255, 140, 0, 1)'  # Orange with 50% opacity
-    elif 3 < x:
+    elif 4 < x:
         color = 'rgba(63, 255, 0,1)'  # Green with 50% opacity
     return 'background-color: %s' % color
 
