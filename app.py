@@ -10,6 +10,16 @@ import datetime
 if "secrets" not in st.session_state:
     st.session_state.secrets = st.secrets
 # st.set_page_config(page_title="ETFDash", page_icon="📈", layout="wide")
+page_config_set = False
+
+def set_page_config():
+    global page_config_set
+    if not page_config_set:
+        st.set_page_config(page_title="ETFDash", page_icon="📈", layout="wide")
+        page_config_set = True
+
+# Call set_page_config function before any Streamlit code
+set_page_config()
 
 def highlight_gain_condition(s):
     if s.name == 'ROI' or s.name == 'Gain':
@@ -219,7 +229,6 @@ if user:
         investment = pd.DataFrame(columns=['Total Investment','Current Value','ROI','Gain'])
         resultant_df = pd.DataFrame(columns=['ETF', 'Price', 'Qty.', 'Buy Value', 'Age', 'CMP', 'Current Value', 'Gain%', 'Amount'])
         if time.time() - st.session_state.last_analysis_time >= 0:
-            print(1)
             st.session_state.last_analysis_time = time.time()
             stocks = list(st.session_state.all_data.keys())
             today = datetime.datetime.today().date()
@@ -231,7 +240,7 @@ if user:
                 up_df['Qty.'] = up_df['Qty.'].str.replace(',', '').astype(float) if up_df['Qty.'].dtype == 'object' else up_df['Qty.']
                 up_df['Buy Value'] = up_df['Price'] * up_df['Qty.']
                 up_df['Age'] = (datetime.datetime.now() - pd.to_datetime(up_df['Date'])).dt.days
-                up_df['CMP'] = round(get_cmp_price(st.secrets["connections"]["gsheets"]["worksheets"][stock]),2)
+                up_df['CMP'] = round(get_cmp_price(st.session_state.secrets["connections"]["gsheets"]["worksheets"][stock]),2)
                 up_df['Current Value'] = up_df['Qty.'] * up_df['CMP']
                 up_df['Gain%'] = round(((up_df['Current Value'] - up_df['Buy Value']) / up_df['Buy Value']) * 100,2)
                 up_df['Amount'] = up_df['Current Value'] - up_df['Buy Value']
@@ -240,7 +249,7 @@ if user:
                     etf_rows = filtered_rows[filtered_rows['ETF'] == etf_name]
                     etf_rows.iloc[1:, 3] = ''  # Set ETF name to empty string for all rows except the first
                     resultant_df = pd.concat([resultant_df, etf_rows], ignore_index=True)
-                cmp = get_cmp_price(st.secrets["connections"]["gsheets"]["worksheets"][stock])
+                cmp = get_cmp_price(st.session_state.secrets["connections"]["gsheets"]["worksheets"][stock])
                 # total_value =  ((st.session_state.all_data[stock]['Qty.'].str.replace(',','').astype(float)) * (st.session_state.all_data[stock]['Price']).astype(float)).sum() if not st.session_state.all_data[stock].empty else 0
                 total_value =  ((st.session_state.all_data[stock]['Qty.']) * (st.session_state.all_data[stock]['Price']).astype(float)).sum() if not st.session_state.all_data[stock].empty else 0
                 total_invested += total_value
@@ -280,4 +289,4 @@ if user:
             total_place.success('Total Amount: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + str(total))
             resultant_df_round = resultant_df.round(2)
             styled_res_df = resultant_df_round.style.format(format_dict2).apply(highlight_gain_condition2, subset=['Gain%'], axis=0)
-            resultant_df_place.dataframe(styled_res_df)
+            resultant_df_place.dataframe(styled_res_df, use_container_width=True)
