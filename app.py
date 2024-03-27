@@ -263,7 +263,7 @@ if user:
                 multi_fac = -1*round(pnl*1000,2)
                 num_of_investments = st.session_state.all_data[stock].shape[0]
                 if st.session_state.user == 'Amit' or st.session_state.user == "Deepti":
-                    amt = 5000 * (num_of_investments - 1)//2 if num_of_investments > 1 else 5000
+                    amt = 25000
                 else:
                     amt = 2500
                 variable = round((amt * multi_fac)/100,2)
