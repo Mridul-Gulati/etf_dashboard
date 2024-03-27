@@ -82,7 +82,7 @@ if st.button("Delete") and row_num > 0:
                     last_row_index = len(column_a_values) + 1
                     date_obj = datetime.strptime(row[0], "%Y-%m-%d")
                     formatted_date = date_obj.strftime("%d-%b-%y")
-                    data = [str(formatted_date),selected_tab,selected_tab, float(row[2]), float(row[1]), '',float(row[1])*float(row[2]),sell_price,str(datetime.now().strftime("%d-%b-%y")), st.session_state.total_invested - (float(row[1])*float(row[2]))]
+                    data = [formatted_date,selected_tab,selected_tab, float(row[2]), float(row[1]), '',float(row[1])*float(row[2]),sell_price,str(datetime.now().strftime("%d-%b-%y")), st.session_state.total_invested - (float(row[1])*float(row[2]))]
                     sheet.update(f"A{last_row_index}:J{last_row_index}", [data])
                     st.session_state.total_invested = st.session_state.total_invested - (float(row[1])*float(row[2]))
                     sheet.update(f"N{last_row_index}", [[50/int(row_num)]])
@@ -139,7 +139,7 @@ if st.button("Delete") and row_num > 0:
                     last_row_index = len(column_a_values) + 1
                     date_obj = datetime.strptime(row[0], "%Y-%m-%d")
                     formatted_date = date_obj.strftime("%d-%b-%y")
-                    data = [str(formatted_date),selected_tab,selected_tab, float(row[2]), float(row[1]), '',float(row[1])*float(row[2]),sell_price,str(datetime.now().strftime("%d-%b-%y")), st.session_state.total_invested - (float(row[1])*float(row[2]))]
+                    data = [formatted_date,selected_tab,selected_tab, float(row[2]), float(row[1]), '',float(row[1])*float(row[2]),sell_price,str(datetime.now().strftime("%d-%b-%y")), st.session_state.total_invested - (float(row[1])*float(row[2]))]
                     sheet.update(f"A{last_row_index}:J{last_row_index}", [data])
                     st.session_state.total_invested = st.session_state.total_invested - (float(row[1])*float(row[2]))
                     print(st.session_state.total_invested)
@@ -197,7 +197,7 @@ if st.button("Delete") and row_num > 0:
                     last_row_index = len(column_a_values) + 1
                     date_obj = datetime.strptime(row[0], "%Y-%m-%d")
                     formatted_date = date_obj.strftime("%d-%b-%y")
-                    data = [str(formatted_date),selected_tab,selected_tab, float(row[2]), float(row[1]), '',float(row[1])*float(row[2]),sell_price,str(datetime.now().strftime("%d-%b-%y")), st.session_state.total_invested - (float(row[1])*float(row[2]))]
+                    data = [formatted_date,selected_tab,selected_tab, float(row[2]), float(row[1]), '',float(row[1])*float(row[2]),sell_price,str(datetime.now().strftime("%d-%b-%y")), st.session_state.total_invested - (float(row[1])*float(row[2]))]
                     sheet.update(f"A{last_row_index}:J{last_row_index}", [data])
                     st.session_state.total_invested = st.session_state.total_invested - (float(row[1])*float(row[2]))
                     print(st.session_state.total_invested)
@@ -255,7 +255,7 @@ if st.button("Delete") and row_num > 0:
                     last_row_index = len(column_a_values) + 1
                     date_obj = datetime.strptime(row[0], "%Y-%m-%d")
                     formatted_date = date_obj.strftime("%d-%b-%y")
-                    data = [str(formatted_date),selected_tab,selected_tab, float(row[2]), float(row[1]), '',float(row[1])*float(row[2]),sell_price,str(datetime.now().strftime("%d-%b-%y")), st.session_state.total_invested - (float(row[1])*float(row[2]))]
+                    data = [formatted_date,selected_tab,selected_tab, float(row[2]), float(row[1]), '',float(row[1])*float(row[2]),sell_price,str(datetime.now().strftime("%d-%b-%y")), st.session_state.total_invested - (float(row[1])*float(row[2]))]
                     sheet.update(f"A{last_row_index}:J{last_row_index}", [data])
                     st.session_state.total_invested = st.session_state.total_invested - (float(row[1])*float(row[2]))
                     print(st.session_state.total_invested)
