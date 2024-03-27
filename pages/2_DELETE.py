@@ -138,15 +138,8 @@ if st.button("Delete") and row_num > 0:
                         st.stop()
                     column_a_values = sheet.col_values(1)
                     last_row_index = len(column_a_values) + 1
-                    date_str = row[0]
-                    date_obj = datetime.strptime(date_str, "%Y-%m-%d")
-                    google_sheets_epoch = datetime(1899, 12, 30)
-                    days_since_epoch = (date_obj - google_sheets_epoch).days + 1  # Adding 1 to match Google Sheets epoch
-                    converted_date = days_since_epoch + (date_obj - datetime.combine(date_obj.date(), datetime.min.time())).seconds / (24 * 60 * 60)
-                    # date_obj = datetime.strptime(row[0], "%Y-%m-%d")
-                    # data = [date_obj,selected_tab,selected_tab, float(row[2]), float(row[1]), '',float(row[1])*float(row[2]),sell_price,datetime.now().date(), st.session_state.total_invested - (float(row[1])*float(row[2]))]
-                    data = [converted_date, selected_tab, selected_tab, float(row[2]), float(row[1]), '', float(row[1])*float(row[2]), sell_price, (datetime.now() - google_sheets_epoch).days + 1, st.session_state.total_invested - (float(row[1])*float(row[2]))]
-
+                    date_obj = datetime.strptime(row[0], "%Y-%m-%d")
+                    data = [date_obj,selected_tab,selected_tab, float(row[2]), float(row[1]), '',float(row[1])*float(row[2]),sell_price,datetime.now().date(), st.session_state.total_invested - (float(row[1])*float(row[2]))]
                     sheet.update(f"A{last_row_index}:J{last_row_index}", [data])
                     st.session_state.total_invested = st.session_state.total_invested - (float(row[1])*float(row[2]))
                     print(st.session_state.total_invested)
@@ -202,11 +195,9 @@ if st.button("Delete") and row_num > 0:
                         st.stop()
                     column_a_values = sheet.col_values(1)
                     last_row_index = len(column_a_values) + 1
+                    # date_obj = datetime.strptime(row[0], "%Y-%m-%d")
                     date_obj = datetime.strptime(row[0], "%Y-%m-%d")
-                    formatted_date = date_obj.strftime("%d-%b-%y")
-                    # formatted_date = datetime.strptime(formatted_date, "%d-%b-%y")
-
-                    data = [formatted_date,selected_tab,selected_tab, float(row[2]), float(row[1]), '',float(row[1])*float(row[2]),sell_price,str(datetime.now().strftime("%d-%b-%y")), st.session_state.total_invested - (float(row[1])*float(row[2]))]
+                    data = [date_obj,selected_tab,selected_tab, float(row[2]), float(row[1]), '',float(row[1])*float(row[2]),sell_price,datetime.now().date(), st.session_state.total_invested - (float(row[1])*float(row[2]))]
                     sheet.update(f"A{last_row_index}:J{last_row_index}", [data])
                     st.session_state.total_invested = st.session_state.total_invested - (float(row[1])*float(row[2]))
                     print(st.session_state.total_invested)
