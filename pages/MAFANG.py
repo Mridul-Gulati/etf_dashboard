@@ -34,6 +34,7 @@ def highlight(x):
     return 'background-color: %s' % color
 def highlight_2(x):
     color = 'rgba(255, 140, 0, 1)'
+    return 'background-color: %s' % color
 
 def highlight_single_gain(value):
     if value < 0:
@@ -65,7 +66,7 @@ else:
     st.error("Columns 'Price' and/or 'Qty.' not found in the DataFrame.")
 
 while True:
-    df = pd.DataFrame(columns=['Total Investment','Current Value','ROI','Gain'])
+    df = pd.DataFrame(columns=['Total Investment','Current Value','ROI', "AVG Price",'Gain'])
     if time.time() - st.session_state.last_analysis_time >= 100:
         st.session_state.last_analysis_time = time.time()
 
@@ -73,6 +74,7 @@ while True:
         st.session_state.res['Current Value'] = st.session_state.res['Qty.'] * st.session_state.res['CMP']
         st.session_state.res['Gain%'] = round(((res['Current Value'] - st.session_state.res['Buy Value']) / st.session_state.res['Buy Value']) * 100,2)
         st.session_state.res['Amount'] = st.session_state.res['Current Value'] - st.session_state.res['Buy Value']
+
         # st.session_state.res = res
         title.title('')
         title.title(f'Data for MAFANG')
@@ -86,8 +88,11 @@ while True:
         current_value = st.session_state.res['Current Value'].sum()
         roi = round(((current_value - buy_value) / buy_value) * 100,2)
         gain = current_value - buy_value
-        df = pd.DataFrame({'Total Investment': [buy_value], 'Current Value': [current_value], 'ROI': [roi], 'Gain': [gain]})
+        total_qty = st.session_state.res['Qty.'].sum()
+        total_value = st.session_state.res['Buy Value'].sum()
+        avg_price = round(total_value / total_qty,2)
+        df = pd.DataFrame({'Total Investment': [buy_value], 'Current Value': [current_value], 'ROI': [roi], "AVG Price": [avg_price],'Gain': [gain]})
         styled_df = df.style.format(format_dict1).apply(highlight_condition, axis=0)
-        df_place.dataframe(styled_df)
         styled_res = res_rounded.sort_values('Date').style.format(format_dict2).apply(highlight_gain_condition, subset=['Gain%'], axis=0)
+        df_place.dataframe(styled_df)
         res_place.dataframe(styled_res)
