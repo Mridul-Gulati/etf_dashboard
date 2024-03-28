@@ -22,7 +22,7 @@ def highlight_gain_condition(s):
         return [''] * len(s)
     
 def highlight_condition(s):
-    if s.name == 'ROI' or s.name == 'Gain':
+    if s.name == 'ROI' or s.name == 'PnL':
         return s.apply(lambda x: highlight_single_gain(x))
     elif s.name == 'Total Investment':
         return s.apply(lambda x: highlight(x))
