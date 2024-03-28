@@ -80,7 +80,7 @@ while True:
         title.title(f'Data for MID150BEES')
         res_place.text('')
         res_rounded = st.session_state.res.round(2)
-        format_dict1 = {'Total Investment': '{:.2f}', 'Current Value': '{:.2f}', 'ROI': '{:.2f}', 'Gain': '{:.0f}'}
+        format_dict1 = {'Total Investment': '{:.2f}', 'Current Value': '{:.2f}', 'ROI': '{:.2f}',"AVG Price": '{:.2f}', 'Gain': '{:.0f}'}
         format_dict2 = {'Price': '{:.2f}', 'Qty.': '{:.2f}', 'CMP': '{:.2f}', 'Gain%': '{:.2f}', 'Amount': '{:.2f}', 'Buy Value': '{:.2f}', 'Current Value': '{:.2f}'}
         total_place = st.empty()
         summary_place = st.empty()
