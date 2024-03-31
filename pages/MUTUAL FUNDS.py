@@ -2,7 +2,8 @@ import pandas as pd
 import streamlit as st
 import time
 import yfinance as yf
-
+import datetime
+from datetime import datetime, timedelta
 
 # def fetch_data_from_google_sheets_d(_secrets):
 #     with st.spinner("Fetching data from Google Sheets..."):
@@ -163,13 +164,12 @@ def get_cmp_price(cmp_symbol):
         return None
     
 def get_prev_price(cmp_symbol):
-    
     try:
         cmp_data = yf.Ticker(cmp_symbol)
-        cmp_price = cmp_data.history(period="1d")["Close"].iloc[-2]
+        cmp_price = cmp_data.history(period="2d")["Close"].iloc[-2]
         return cmp_price
     except Exception as e:
-        st.error(f"Failed to fetch cmp price: {e}")
+        st.error(f"Failed to fetch prev day price: {e}")
         return None
 
 st.title("Mutual Funds")
