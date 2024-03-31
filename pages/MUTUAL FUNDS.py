@@ -194,5 +194,5 @@ while True:
                 color = 'rgba(63, 255, 0,1)'
             new_res = pd.DataFrame({'Mutual Fund': [mutual_funds[mf]], 'Down_PD%': [down_pd],'CMP': [cmp],'Prev_day Price': [prev]})
             summary = pd.concat([summary, new_res], ignore_index=True)
-        summary_styled = summary.sort_values('Down_PD%').style.applymap(lambda x: 'background-color: %s' % color if x.name == 'Down_PD%' else '')
+        summary_styled = summary.sort_values('Down_PD%').style.applymap(lambda x: 'background-color: %s' % color if x == 'Down_PD%' else '')
         summary_mf.dataframe(summary_styled)
