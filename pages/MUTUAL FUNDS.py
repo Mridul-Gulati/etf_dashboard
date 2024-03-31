@@ -152,6 +152,21 @@ from datetime import datetime, timedelta
 #     st.session_state.all_data = all_data_h
 #     st.session_state.user = 'Hemank'
 
+def highlight_gain_condition(s):
+    if s.name == 'Down_PD%':
+        return s.apply(lambda x: highlight_single_gain(x))
+    else:
+        return [''] * len(s)
+def highlight_single_gain(value):
+    if value < 0:
+        color = 'rgba(255, 0, 0, 0.8)'  # Red with 50% opacity
+    elif 0 <= value <= 5:
+        color = 'rgba(255, 255, 0, 0.7)'  # Yellow with 50% opacity
+    elif 5 < value:
+        color = 'rgba(63, 255, 0,1)'  # Green with 50% opacity
+    else:
+        color = ''  # No highlighting if not in specified ranges
+    return 'background-color: %s' % color
 
 def get_cmp_price(cmp_symbol):
     
@@ -194,5 +209,6 @@ while True:
                 color = 'rgba(63, 255, 0,1)'
             new_res = pd.DataFrame({'Mutual Fund': [mutual_funds[mf]], 'Down_PD%': [down_pd],'CMP': [cmp],'Prev_day Price': [prev]})
             summary = pd.concat([summary, new_res], ignore_index=True)
-        summary_styled = summary.sort_values('Down_PD%').style.applymap(lambda x: 'background-color: %s' % color if x == 'Down_PD%' else '')
+        format_dict1 = {'Down_PD%': '{:.2f}', 'CMP': '{:.2f}', 'Prev_day Price': '{:.2f}'}
+        summary_styled = summary.sort_values('Down_PD%').style.format(format_dict1).apply(highlight_gain_condition, subset=['Down_PD%'], axis=0)
         summary_mf.dataframe(summary_styled)
