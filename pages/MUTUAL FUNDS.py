@@ -155,7 +155,7 @@ import yfinance as yf
 def get_cmp_price(cmp_symbol):
     
     try:
-        cmp_data = yf.Ticker(cmp_symbol+".NS")
+        cmp_data = yf.Ticker(cmp_symbol)
         cmp_price = cmp_data.history(period="1d")["Close"].iloc[-1]
         return cmp_price
     except Exception as e:
