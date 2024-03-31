@@ -165,7 +165,7 @@ def get_cmp_price(cmp_symbol):
 def get_prev_price(cmp_symbol):
     
     try:
-        cmp_data = yf.Ticker(cmp_symbol+".NS")
+        cmp_data = yf.Ticker(cmp_symbol)
         cmp_price = cmp_data.history(period="1d")["Close"].iloc[-2]
         return cmp_price
     except Exception as e:
