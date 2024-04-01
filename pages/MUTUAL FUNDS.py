@@ -175,7 +175,6 @@ def get_cmp_price(cmp_symbol):
         cmp_price = cmp_data.history(period="1d")["Close"].iloc[-1]
         return cmp_price
     except Exception as e:
-        st.error(f"Failed to fetch cmp price: {e}")
         return None
     
 def get_prev_price(cmp_symbol):
@@ -184,7 +183,6 @@ def get_prev_price(cmp_symbol):
         cmp_price = cmp_data.history(period="2d")["Close"].iloc[-2]
         return cmp_price
     except Exception as e:
-        st.error(f"Failed to fetch prev day price: {e}")
         return None
 
 st.title("Mutual Funds")
