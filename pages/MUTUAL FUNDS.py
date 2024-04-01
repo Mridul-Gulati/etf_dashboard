@@ -198,8 +198,8 @@ while True:
     if time.time() - st.session_state.last_analysis_time > 100:
         for mf in mutual_funds.keys():
             time.sleep(1)
-            cmp = get_cmp_price(mf+".BO") if cmp is not None else 0
-            prev = get_prev_price(mf+".BO") if prev is not None else 0
+            cmp = get_cmp_price(mf+".BO") if get_cmp_price(mf+".BO") is not None else 0
+            prev = get_prev_price(mf+".BO") if get_prev_price(mf+".BO") is not None else 0
             down_pd = round((cmp - prev)/prev * 100,2)
             if down_pd < 0:
                 color = 'rgba(255, 0, 0, 0.8)'
