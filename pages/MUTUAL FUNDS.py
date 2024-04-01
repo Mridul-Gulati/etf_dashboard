@@ -200,7 +200,7 @@ while True:
             time.sleep(1)
             cmp = get_cmp_price(mf+".BO") if get_cmp_price(mf+".BO") is not None else 0
             prev = get_prev_price(mf+".BO") if get_prev_price(mf+".BO") is not None else 0
-            down_pd = round((cmp - prev)/prev * 100,2)
+            down_pd = round((cmp - prev)/prev * 100,2) if prev != 0 else 0
             if down_pd < 0:
                 color = 'rgba(255, 0, 0, 0.8)'
             elif down_pd >= 0 and down_pd < 5:
