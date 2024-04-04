@@ -32,7 +32,9 @@ def highlight_gain_condition2(s):
 def highlight_roi(value):
     if value < 0:
         color = 'rgba(255, 0, 0, 0.8)'  # Red with 50% opacity
-    elif 0 <= value <= 2:
+    elif value == 0:
+        color = 'rgba(255, 192, 203, 0.7)'
+    elif 0 < value <= 2:
         color = 'rgba(255, 255, 0, 0.7)'  # Yellow with 50% opacity
     elif 2 < value <= 3:
         color = 'rgba(255, 140, 0, 1)'  # Orange with 50% opacity
