@@ -78,6 +78,7 @@ while True:
         today = datetime.datetime.today().date()
         for stock in stocks:
             time.sleep(1)
+            st.session_state.all_data[stock]['Qty.'] = st.session_state.all_data[stock]['Qty.'].str.replace(',', '').astype(float) if st.session_state.all_data[stock]['Qty.'].dtype == 'object' else st.session_state.all_data[stock]['Qty.']
             cmp = get_cmp_price(st.session_state.secrets["connections"]["gsheets"]["worksheets"][stock])
             total_value =  ((st.session_state.all_data[stock]['Qty.']) * (st.session_state.all_data[stock]['Price']).astype(float)).sum() if not st.session_state.all_data[stock].empty else 0
             total_invested += total_value
