@@ -1,0 +1,100 @@
+import pandas as pd
+import streamlit as st
+import time
+import yfinance as yf
+from datetime import datetime
+import datetime
+
+secrets = st.session_state.secrets
+page_config_set = False
+
+def set_page_config():
+    global page_config_set
+    if not page_config_set:
+        st.set_page_config(page_title="ETFDash", page_icon="📈", layout="wide")
+        page_config_set = True
+
+set_page_config()
+st.session_state.last_analysis_time = time.time() - 110
+
+def highlight_gain_condition(s):
+    if s.name == 'ROI' or s.name == 'Gain':
+        return s.apply(lambda x: highlight_single_gain(x))
+    elif s.name == 'Total Investment':
+        return s.apply(lambda x: highlight(x))
+    else:
+        return s.apply(lambda x: highlight_2(x))
+
+def highlight_gain_condition2(s):
+    if s.name == 'Gain%':
+        return s.apply(lambda x: highlight_gain(x))
+
+def highlight_gain(x):
+    if 3 < x <= 4:
+        color = 'rgba(255, 140, 0, 1)'  # Orange with 50% opacity
+    elif 4 < x:
+        color = 'rgba(63, 255, 0,1)'  # Green with 50% opacity
+    return 'background-color: %s' % color
+
+def highlight(x):
+    color = 'rgba(139,190,27,1)'
+    return 'background-color: %s' % color
+def highlight_2(x):
+    color = 'rgba(255, 140, 0, 1)'
+    return 'background-color: %s' % color
+def highlight_single_gain(value):
+    if value <= 0:
+        color = 'rgba(255, 0, 0, 0.8)'
+    else:
+        color = 'rgba(63, 255, 0,1)'  
+    return 'background-color: %s' % color
+
+def get_cmp_price(cmp_symbol):
+    try:
+        cmp_data = yf.Ticker(cmp_symbol+".NS")
+        cmp_price = cmp_data.history(period="1d")["Close"].iloc[-1]
+        return cmp_price
+    except Exception as e:
+        st.error(f"Failed to fetch cmp price: {e}")
+        return None
+
+
+if 'total_invested' not in st.session_state:
+    st.session_state.total_invested = 0
+
+sum_title = st.empty()
+total_invested_place = st.empty()
+individual_invested_place = st.empty()
+sum_title.title('Summary')
+
+total_invested = 0
+total_current_value = 0
+investment_total = pd.DataFrame(columns=['Total Investment','Current Value','ROI','Gain'])
+investment_individual = pd.DataFrame(columns=["ETF",'Total Investment','Current Value','ROI','Gain'])
+while True:
+    if time.time() - st.session_state.last_analysis_time >= 100:
+        st.session_state.last_analysis_time = time.time()
+        stocks = list(st.session_state.all_data.keys())
+        today = datetime.datetime.today().date()
+        for stock in stocks:
+            time.sleep(1)
+            cmp = get_cmp_price(st.session_state.secrets["connections"]["gsheets"]["worksheets"][stock])
+            total_value =  ((st.session_state.all_data[stock]['Qty.']) * (st.session_state.all_data[stock]['Price']).astype(float)).sum() if not st.session_state.all_data[stock].empty else 0
+            total_invested += total_value
+            current_value =  ((st.session_state.all_data[stock]['Qty.']) * cmp).sum() if not st.session_state.all_data[stock].empty else 0
+            total_current_value += current_value
+            total_qty = (st.session_state.all_data[stock]['Qty.']).sum() if not st.session_state.all_data[stock].empty else 1
+            buy_price = round(total_value / total_qty,2)
+            st.session_state.all_data[stock]['Price'] = pd.to_numeric(st.session_state.all_data[stock]['Price'], errors='coerce')
+            pnl = (cmp-buy_price)/buy_price if buy_price != 0 else 0
+            investment_individual = pd.concat([investment_individual,pd.DataFrame({"ETF":[stock],'Total Investment':[total_value],'Current Value':[current_value],'ROI':[round((pnl) * 100,2)],'Gain':[round(current_value - total_value,2)]})],ignore_index=True)
+
+        investment_total = pd.concat([investment_total,pd.DataFrame({'Total Investment':[total_invested],'Current Value':[total_current_value],'ROI':[round(((total_current_value - total_invested)/total_invested) * 100,2)],'Gain':[round(total_current_value - total_invested,2)]})],ignore_index=True)
+        res_rounded = investment_total.round(2)
+        res_individual_rounded = investment_individual.round(2)
+        format_dict = {'Total Investment': '{:.2f}', 'Current Value': '{:.2f}', 'ROI': '{:.2f}', 'Gain': '{:.0f}'}
+        styled_res = res_rounded.style.format(format_dict).apply(highlight_gain_condition, axis=0)
+        styled_res_individual = res_individual_rounded.style.format(format_dict).apply(highlight_gain_condition, axis=0)
+        total_invested_place.dataframe(styled_res)
+        individual_invested_place.dataframe(styled_res_individual)
+        st.session_state.total_invested = total_invested
