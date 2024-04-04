@@ -105,10 +105,10 @@ while True:
 
         investment_total = pd.concat([investment_total,pd.DataFrame({'Total Investment':[total_invested],'Current Value':[total_current_value],'ROI':[round(((total_current_value - total_invested)/total_invested) * 100,2)],'Gain':[round(total_current_value - total_invested,2)]})],ignore_index=True)
         res_rounded = investment_total.round(2)
-        res_individual_rounded = investment_individual.sort_values("ROI").round(2)
+        res_individual_rounded = investment_individual.sort_values("ROI", ascending=False).round(2)
         format_dict = {'Total Investment': '{:.2f}', 'Current Value': '{:.2f}', 'ROI': '{:.2f}', 'Gain': '{:.0f}'}
         styled_res = res_rounded.style.format(format_dict).apply(highlight_gain_condition, axis=0)
-        styled_res_individual = res_individual_rounded.style.format(format_dict).apply(highlight_gain_condition2, axis=0)
-        total_invested_place.dataframe(styled_res, use_container_width=True)
+        styled_res_individual = res_individual_rounded.style.format(format_dict).apply(highlight_gain_condition2,subset=['ROI'], axis=0)
+        total_invested_place.dataframe(styled_res)
         individual_invested_place.dataframe(styled_res_individual, use_container_width=True, height=500)
         st.session_state.total_invested = total_invested
