@@ -26,8 +26,21 @@ def highlight_gain_condition(s):
         return s.apply(lambda x: highlight_2(x))
 
 def highlight_gain_condition2(s):
-    if s.name == 'Gain%':
-        return s.apply(lambda x: highlight_gain(x))
+    if s.name == 'ROI':
+        return s.apply(lambda x: highlight_roi(x))
+    
+def highlight_roi(value):
+    if value < 0:
+        color = 'rgba(255, 0, 0, 0.8)'  # Red with 50% opacity
+    elif 0 <= value <= 2:
+        color = 'rgba(255, 255, 0, 0.7)'  # Yellow with 50% opacity
+    elif 2 < value <= 3:
+        color = 'rgba(255, 140, 0, 1)'  # Orange with 50% opacity
+    elif 3 < value:
+        color = 'rgba(63, 255, 0,1)'  # Green with 50% opacity
+    else:
+        color = ''  # No highlighting if not in specified ranges
+    return 'background-color: %s' % color
 
 def highlight_gain(x):
     if 3 < x <= 4:
@@ -92,10 +105,10 @@ while True:
 
         investment_total = pd.concat([investment_total,pd.DataFrame({'Total Investment':[total_invested],'Current Value':[total_current_value],'ROI':[round(((total_current_value - total_invested)/total_invested) * 100,2)],'Gain':[round(total_current_value - total_invested,2)]})],ignore_index=True)
         res_rounded = investment_total.round(2)
-        res_individual_rounded = investment_individual.round(2)
+        res_individual_rounded = investment_individual.sort_values("ROI").round(2)
         format_dict = {'Total Investment': '{:.2f}', 'Current Value': '{:.2f}', 'ROI': '{:.2f}', 'Gain': '{:.0f}'}
         styled_res = res_rounded.style.format(format_dict).apply(highlight_gain_condition, axis=0)
-        styled_res_individual = res_individual_rounded.style.format(format_dict).apply(highlight_gain_condition, axis=0)
-        total_invested_place.dataframe(styled_res)
-        individual_invested_place.dataframe(styled_res_individual)
+        styled_res_individual = res_individual_rounded.style.format(format_dict).apply(highlight_gain_condition2, axis=0)
+        total_invested_place.dataframe(styled_res, use_container_width=True)
+        individual_invested_place.dataframe(styled_res_individual, use_container_width=True, height=500)
         st.session_state.total_invested = total_invested
