@@ -112,5 +112,5 @@ while True:
         styled_res = res_rounded.style.format(format_dict).apply(highlight_gain_condition, axis=0)
         styled_res_individual = res_individual_rounded.style.format(format_dict).apply(highlight_gain_condition2,subset=['ROI'], axis=0)
         total_invested_place.dataframe(styled_res)
-        individual_invested_place.dataframe(styled_res_individual, use_container_width=True, height=500)
+        individual_invested_place.dataframe(styled_res_individual, use_container_width=True, height=800)
         st.session_state.total_invested = total_invested
