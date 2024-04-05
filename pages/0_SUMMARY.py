@@ -15,7 +15,6 @@ def set_page_config():
         page_config_set = True
 
 set_page_config()
-col = st.columns(2)
 st.session_state.last_analysis_time = time.time() - 110
 
 def highlight_gain_condition(s):
@@ -81,6 +80,7 @@ if 'total_invested' not in st.session_state:
 sum_title = st.empty()
 total_invested_place = st.empty()
 sum_title.title('Summary')
+col = st.columns(2)
 
 total_invested = 0
 total_current_value = 0
