@@ -159,8 +159,8 @@ while True:
         investment_total = pd.concat([investment_total,pd.DataFrame({'Total Investment':[total_invested],'Current Value':[total_current_value],'ROI':[round(((total_current_value - total_invested)/total_invested) * 100,2)],'Gain':[round(total_current_value - total_invested,2)]})],ignore_index=True)
         res_rounded = investment_total.round(2)
         res_individual_rounded = investment_individual.sort_values("ROI", ascending=False).round(2)
-        res_individual_rounded_1 = res_individual_rounded.iloc[:(len(res_individual_rounded)+1)//2]
-        res_individual_rounded_2 = res_individual_rounded.iloc[(len(res_individual_rounded)+1)//2:]
+        res_individual_rounded_1 = res_individual_rounded.iloc[:len(res_individual_rounded)//2]
+        res_individual_rounded_2 = res_individual_rounded.iloc[len(res_individual_rounded)//2:]
         format_dict = {'Total Investment': '{:.2f}', 'Current Value': '{:.2f}', 'ROI': '{:.2f}', 'Gain': '{:.0f}'}
         styled_res = res_rounded.style.format(format_dict).apply(highlight_gain_condition, axis=0)
         styled_res_individual_1 = res_individual_rounded_1.style.format(format_dict).apply(highlight_gain_condition2,subset=['ROI'], axis=0)
@@ -169,7 +169,7 @@ while True:
         numRows = len(res_individual_rounded)//2
         st.session_state.total_invested = total_invested
         col1.dataframe(styled_res_individual_1, use_container_width=True, height=(numRows + 1) * 35 + 3)
-        col2.dataframe(styled_res_individual_2, use_container_width=True, height=(numRows + 2) * 35 + 3)
+        col2.dataframe(styled_res_individual_2, use_container_width=True, height=(numRows + 1) * 35 + 3)
         buy_etf.subheader('Buy')
         buy_etf.dataframe(buy.sort_values('Down_LB%'), use_container_width=True)
         sell_etf.subheader('Sell')
