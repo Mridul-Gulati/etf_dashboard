@@ -109,15 +109,14 @@ while True:
         for stock in stocks:
             time.sleep(1)
             up_df = st.session_state.all_data[stock]
+            up_df.drop("Date", axis=1, inplace=True)
             up_df['ETF'] = [stock] * up_df.shape[0]
             up_df['Price'] = up_df['Price'].str.replace(',', '').astype(float) if up_df['Price'].dtype == 'object' else up_df['Price']
             up_df['Qty.'] = up_df['Qty.'].str.replace(',', '').astype(float) if up_df['Qty.'].dtype == 'object' else up_df['Qty.']
             up_df['Age'] = (datetime.datetime.now() - pd.to_datetime(up_df['Date'])).dt.days
             up_df['CMP'] = round(get_cmp_price(st.session_state.secrets["connections"]["gsheets"]["worksheets"][stock]),2)
-            up_df['Buy Value'] = up_df['Price'] * up_df['Qty.']
-            up_df['Current Value'] = up_df['Qty.'] * up_df['CMP']
-            up_df['Gain%'] = round(((up_df['Current Value'] - up_df['Buy Value']) / up_df['Buy Value']) * 100,2)
-            up_df['Amount'] = up_df['Current Value'] - up_df['Buy Value']
+            up_df['Gain%'] = round((((up_df['Qty.'] * up_df['CMP']) - (up_df['Price'] * up_df['Qty.'])) / (up_df['Price'] * up_df['Qty.'])) * 100,2)
+            up_df['Amount'] = (up_df['Qty.'] * up_df['CMP']) - (up_df['Price'] * up_df['Qty.'])
             filtered_rows = up_df[up_df['Gain%'] > 3]
             for etf_name in filtered_rows['ETF'].unique():
                 etf_rows = filtered_rows[filtered_rows['ETF'] == etf_name]
@@ -150,16 +149,16 @@ while True:
                 total = 0
             investment_individual = pd.concat([investment_individual,pd.DataFrame({"ETF":[stock],'Total Investment':[total_value],'Current Value':[current_value],'ROI':[round((pnl) * 100,2)],'Gain':[round(current_value - total_value,2)]})],ignore_index=True)
         total = buy['Amount'].sum()
-        buy_sell[0].text("")
-        buy_sell[1].text("")
+        buy_sell[0].empty()
         buy_sell[0].subheader('Buy')
-        buy_sell[0].dataframe(buy.sort_values('Down_LB%'))
+        buy_sell[0].dataframe(buy.sort_values('Down_LB%'), use_container_width=True)
         buy_sell[0].success('Total Amount: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + str(total))
         format_dict2 = {'Price': '{:.2f}', 'Qty.': '{:.2f}', 'CMP': '{:.2f}', 'Gain%': '{:.2f}', 'Amount': '{:.2f}', 'Buy Value': '{:.2f}', 'Current Value': '{:.2f}'}
         resultant_df_round = sell.round(2)
         styled_res_df = resultant_df_round.style.format(format_dict2).apply(highlight_gain_condition3, subset=['Gain%'], axis=0)
+        buy_sell[1].empty()
         buy_sell[1].subheader('Sell')
-        buy_sell[1].dataframe(styled_res_df)
+        buy_sell[1].dataframe(styled_res_df, use_container_width=True)
         investment_total = pd.concat([investment_total,pd.DataFrame({'Total Investment':[total_invested],'Current Value':[total_current_value],'ROI':[round(((total_current_value - total_invested)/total_invested) * 100,2)],'Gain':[round(total_current_value - total_invested,2)]})],ignore_index=True)
         res_rounded = investment_total.round(2)
         res_individual_rounded = investment_individual.sort_values("ROI", ascending=False).round(2)
@@ -171,8 +170,8 @@ while True:
         styled_res_individual_2 = res_individual_rounded_2.style.format(format_dict).apply(highlight_gain_condition2,subset=['ROI'], axis=0)
         total_invested_place.dataframe(styled_res)
         numRows = len(res_individual_rounded)//2
-        col[0].text("")
-        col[1].text("")
+        col[0].empty()
+        col[1].empty()
         col[0].dataframe(styled_res_individual_1, use_container_width=True, height=(numRows + 1) * 35 + 3)
         col[1].dataframe(styled_res_individual_2, use_container_width=True, height=(numRows + 2) * 35 + 3)
         st.session_state.total_invested = total_invested
