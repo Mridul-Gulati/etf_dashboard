@@ -147,31 +147,29 @@ while True:
                 total = 0
             investment_individual = pd.concat([investment_individual,pd.DataFrame({"ETF":[stock],'Total Investment':[total_value],'Current Value':[current_value],'ROI':[round((pnl) * 100,2)],'Gain':[round(current_value - total_value,2)]})],ignore_index=True)
         total = buy['Amount'].sum()
+        format_dict2 = {'Price': '{:.2f}', 'Qty.': '{:.2f}', 'CMP': '{:.2f}', 'Gain%': '{:.2f}', 'Amount': '{:.2f}', 'Buy Value': '{:.2f}', 'Current Value': '{:.2f}'}
+        sell.drop(columns=['Date'], inplace=True)
+        resultant_df_round = sell.round(2)
+        styled_res_df = resultant_df_round.style.format(format_dict2).apply(highlight_gain_condition3, subset=['Gain%'], axis=0)
+        investment_total = pd.concat([investment_total,pd.DataFrame({'Total Investment':[total_invested],'Current Value':[total_current_value],'ROI':[round(((total_current_value - total_invested)/total_invested) * 100,2)],'Gain':[round(total_current_value - total_invested,2)]})],ignore_index=True)
+        res_rounded = investment_total.round(2)
+        res_individual_rounded = investment_individual.sort_values("ROI", ascending=False).round(2)
+        res_individual_rounded_1 = res_individual_rounded.iloc[:len(res_individual_rounded+1)//2]
+        res_individual_rounded_2 = res_individual_rounded.iloc[len(res_individual_rounded+1)//2:]
+        format_dict = {'Total Investment': '{:.2f}', 'Current Value': '{:.2f}', 'ROI': '{:.2f}', 'Gain': '{:.0f}'}
+        styled_res = res_rounded.style.format(format_dict).apply(highlight_gain_condition, axis=0)
+        styled_res_individual_1 = res_individual_rounded_1.style.format(format_dict).apply(highlight_gain_condition2,subset=['ROI'], axis=0)
+        styled_res_individual_2 = res_individual_rounded_2.style.format(format_dict).apply(highlight_gain_condition2,subset=['ROI'], axis=0)
+        total_invested_place.dataframe(styled_res)
+        numRows = len(res_individual_rounded)//2
+        st.session_state.total_invested = total_invested
         with placeholder.container():
-            col = st.columns(2)
-            buy_sell = st.columns(2)
-            buy_sell[0].subheader('Buy')
-            buy_sell[0].dataframe(buy.sort_values('Down_LB%'), use_container_width=True)
-            buy_sell[0].success('Total Amount: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + str(total))
-            format_dict2 = {'Price': '{:.2f}', 'Qty.': '{:.2f}', 'CMP': '{:.2f}', 'Gain%': '{:.2f}', 'Amount': '{:.2f}', 'Buy Value': '{:.2f}', 'Current Value': '{:.2f}'}
-            sell.drop(columns=['Date'], inplace=True)
-            resultant_df_round = sell.round(2)
-            styled_res_df = resultant_df_round.style.format(format_dict2).apply(highlight_gain_condition3, subset=['Gain%'], axis=0)
-            buy_sell[1].empty()
-            buy_sell[1].subheader('Sell')
-            buy_sell[1].dataframe(styled_res_df, use_container_width=True)
-            investment_total = pd.concat([investment_total,pd.DataFrame({'Total Investment':[total_invested],'Current Value':[total_current_value],'ROI':[round(((total_current_value - total_invested)/total_invested) * 100,2)],'Gain':[round(total_current_value - total_invested,2)]})],ignore_index=True)
-            res_rounded = investment_total.round(2)
-            res_individual_rounded = investment_individual.sort_values("ROI", ascending=False).round(2)
-            res_individual_rounded_1 = res_individual_rounded.iloc[:len(res_individual_rounded)//2]
-            res_individual_rounded_2 = res_individual_rounded.iloc[len(res_individual_rounded)//2:]
-            format_dict = {'Total Investment': '{:.2f}', 'Current Value': '{:.2f}', 'ROI': '{:.2f}', 'Gain': '{:.0f}'}
-            styled_res = res_rounded.style.format(format_dict).apply(highlight_gain_condition, axis=0)
-            styled_res_individual_1 = res_individual_rounded_1.style.format(format_dict).apply(highlight_gain_condition2,subset=['ROI'], axis=0)
-            styled_res_individual_2 = res_individual_rounded_2.style.format(format_dict).apply(highlight_gain_condition2,subset=['ROI'], axis=0)
-            total_invested_place.dataframe(styled_res)
-            numRows = len(res_individual_rounded)//2
-            col[0].dataframe(styled_res_individual_1, use_container_width=True, height=(numRows + 1) * 35 + 3)
-            col[1].dataframe(styled_res_individual_2, use_container_width=True, height=(numRows + 2) * 35 + 3)
-            st.session_state.total_invested = total_invested
+            col1,col2 = st.columns(2)
+            col1.dataframe(styled_res_individual_1, use_container_width=True, height=(numRows + 1) * 35 + 3)
+            col2.dataframe(styled_res_individual_2, use_container_width=True, height=(numRows + 2) * 35 + 3)
+            buy_etf,sell_etf = st.columns(2)
+            buy_etf.subheader('Buy')
+            buy_etf.dataframe(buy.sort_values('Down_LB%'), use_container_width=True)
+            sell_etf.subheader('Sell')
+            sell_etf.dataframe(styled_res_df, use_container_width=True)
         placeholder.empty()
