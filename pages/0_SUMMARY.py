@@ -117,7 +117,7 @@ while True:
         styled_res_individual_1 = res_individual_rounded_1.style.format(format_dict).apply(highlight_gain_condition2,subset=['ROI'], axis=0)
         styled_res_individual_2 = res_individual_rounded_2.style.format(format_dict).apply(highlight_gain_condition2,subset=['ROI'], axis=0)
         total_invested_place.dataframe(styled_res)
-        numRows = len(res_individual_rounded//2)
+        numRows = len(res_individual_rounded)//2
         with col1:
             individual_invested_place_1.dataframe(styled_res_individual_1, use_container_width=True, height=(numRows + 1) * 35 + 3)
         with col2:
