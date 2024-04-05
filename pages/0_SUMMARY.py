@@ -15,7 +15,7 @@ def set_page_config():
         page_config_set = True
 
 set_page_config()
-col1, col2 = st.columns(2)
+col1, col2 = st.columns([1,1])
 st.session_state.last_analysis_time = time.time() - 110
 
 def highlight_gain_condition(s):
