@@ -109,7 +109,6 @@ while True:
         for stock in stocks:
             time.sleep(1)
             up_df = st.session_state.all_data[stock]
-            up_df.drop("Date", axis=1, inplace=True)
             up_df['ETF'] = [stock] * up_df.shape[0]
             up_df['Price'] = up_df['Price'].str.replace(',', '').astype(float) if up_df['Price'].dtype == 'object' else up_df['Price']
             up_df['Qty.'] = up_df['Qty.'].str.replace(',', '').astype(float) if up_df['Qty.'].dtype == 'object' else up_df['Qty.']
@@ -117,6 +116,7 @@ while True:
             up_df['CMP'] = round(get_cmp_price(st.session_state.secrets["connections"]["gsheets"]["worksheets"][stock]),2)
             up_df['Gain%'] = round((((up_df['Qty.'] * up_df['CMP']) - (up_df['Price'] * up_df['Qty.'])) / (up_df['Price'] * up_df['Qty.'])) * 100,2)
             up_df['Amount'] = (up_df['Qty.'] * up_df['CMP']) - (up_df['Price'] * up_df['Qty.'])
+            up_df.drop("Date", axis=1, inplace=True)
             filtered_rows = up_df[up_df['Gain%'] > 3]
             for etf_name in filtered_rows['ETF'].unique():
                 etf_rows = filtered_rows[filtered_rows['ETF'] == etf_name]
