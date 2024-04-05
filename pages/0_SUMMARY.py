@@ -93,7 +93,12 @@ if 'total_invested' not in st.session_state:
 sum_title = st.empty()
 total_invested_place = st.empty()
 sum_title.title('Summary')
-placeholder = st.empty()
+col = st.columns(2)
+col1 = col[0].empty()
+col2 = col[1].empty()
+buy_sell = st.columns(2)
+buy_etf = buy_sell[0].empty()
+sell_etf = buy_sell[1].empty()
 total_invested = 0
 total_current_value = 0
 while True:
@@ -163,13 +168,9 @@ while True:
         total_invested_place.dataframe(styled_res)
         numRows = len(res_individual_rounded)//2
         st.session_state.total_invested = total_invested
-        with placeholder.container():
-            col1,col2 = st.columns(2)
-            col1.dataframe(styled_res_individual_1, use_container_width=True, height=(numRows + 1) * 35 + 3)
-            col2.dataframe(styled_res_individual_2, use_container_width=True, height=(numRows + 2) * 35 + 3)
-            buy_etf,sell_etf = st.columns(2)
-            buy_etf.subheader('Buy')
-            buy_etf.dataframe(buy.sort_values('Down_LB%'), use_container_width=True)
-            sell_etf.subheader('Sell')
-            sell_etf.dataframe(styled_res_df, use_container_width=True)
-        placeholder.empty()
+        col1.dataframe(styled_res_individual_1, use_container_width=True, height=(numRows + 1) * 35 + 3)
+        col2.dataframe(styled_res_individual_2, use_container_width=True, height=(numRows + 2) * 35 + 3)
+        buy_etf.subheader('Buy')
+        buy_etf.dataframe(buy.sort_values('Down_LB%'), use_container_width=True)
+        sell_etf.subheader('Sell')
+        sell_etf.dataframe(styled_res_df, use_container_width=True)
