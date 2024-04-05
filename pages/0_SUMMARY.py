@@ -7,7 +7,6 @@ import datetime
 
 secrets = st.session_state.secrets
 page_config_set = False
-col1, col2 = st.columns(2)
 
 def set_page_config():
     global page_config_set
@@ -16,6 +15,7 @@ def set_page_config():
         page_config_set = True
 
 set_page_config()
+col1, col2 = st.columns(2)
 st.session_state.last_analysis_time = time.time() - 110
 
 def highlight_gain_condition(s):
