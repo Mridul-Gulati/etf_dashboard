@@ -116,7 +116,6 @@ while True:
             up_df['CMP'] = round(get_cmp_price(st.session_state.secrets["connections"]["gsheets"]["worksheets"][stock]),2)
             up_df['Gain%'] = round((((up_df['Qty.'] * up_df['CMP']) - (up_df['Price'] * up_df['Qty.'])) / (up_df['Price'] * up_df['Qty.'])) * 100,2)
             up_df['Amount'] = (up_df['Qty.'] * up_df['CMP']) - (up_df['Price'] * up_df['Qty.'])
-            up_df.drop("Date", axis=1, inplace=True)
             filtered_rows = up_df[up_df['Gain%'] > 3]
             for etf_name in filtered_rows['ETF'].unique():
                 etf_rows = filtered_rows[filtered_rows['ETF'] == etf_name]
@@ -154,6 +153,7 @@ while True:
         buy_sell[0].dataframe(buy.sort_values('Down_LB%'), use_container_width=True)
         buy_sell[0].success('Total Amount: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + str(total))
         format_dict2 = {'Price': '{:.2f}', 'Qty.': '{:.2f}', 'CMP': '{:.2f}', 'Gain%': '{:.2f}', 'Amount': '{:.2f}', 'Buy Value': '{:.2f}', 'Current Value': '{:.2f}'}
+        sell.drop(columns=['Date'], inplace=True)
         resultant_df_round = sell.round(2)
         styled_res_df = resultant_df_round.style.format(format_dict2).apply(highlight_gain_condition3, subset=['Gain%'], axis=0)
         buy_sell[1].empty()
