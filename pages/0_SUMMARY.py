@@ -145,13 +145,13 @@ while True:
             down_lb = round((cmp - last_buy)/last_buy * 100,2) if last_buy != 0 else 0
             if cmp < last_buy and pnl < 0:
                 new_res = pd.DataFrame({'ETF': [stock], 'Down%':[round(pnl*100,2)], 'Down_LB%':[down_lb],'CMP':[cmp], 'Amount': [amount], 'Qty': [qty], 'LB': [last_buy]})
-                summary = pd.concat([summary,new_res],ignore_index=True)
-            if summary.empty:
+                buy = pd.concat([buy,new_res],ignore_index=True)
+            if buy.empty:
                 total = 0
             investment_individual = pd.concat([investment_individual,pd.DataFrame({"ETF":[stock],'Total Investment':[total_value],'Current Value':[current_value],'ROI':[round((pnl) * 100,2)],'Gain':[round(current_value - total_value,2)]})],ignore_index=True)
-        total = summary['Amount'].sum()
+        total = buy['Amount'].sum()
         buy_sell[0].subheader('Buy')
-        buy_sell[0].dataframe(summary.sort_values('Down_LB%'))
+        buy_sell[0].dataframe(buy.sort_values('Down_LB%'))
         buy_sell[0].success('Total Amount: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + str(total))
         format_dict2 = {'Price': '{:.2f}', 'Qty.': '{:.2f}', 'CMP': '{:.2f}', 'Gain%': '{:.2f}', 'Amount': '{:.2f}', 'Buy Value': '{:.2f}', 'Current Value': '{:.2f}'}
         resultant_df_round = sell.sort_values('Gain%').round(2)
