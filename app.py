@@ -217,7 +217,7 @@ if 'total_invested' not in st.session_state:
 if user:
     if 'last_analysis_time' not in st.session_state:
         st.session_state.last_analysis_time = time.time()
-    switch_page("0_SUMMARY")
+    switch_page("summary")
     sum_title = st.empty()
     total_invested_place = st.empty()
     summary_place = st.empty()
