@@ -84,9 +84,9 @@ sum_title.title('Summary')
 
 total_invested = 0
 total_current_value = 0
-investment_total = pd.DataFrame(columns=['Total Investment','Current Value','ROI','Gain'])
-investment_individual = pd.DataFrame(columns=["ETF",'Total Investment','Current Value','ROI','Gain'])
 while True:
+    investment_total = pd.DataFrame(columns=['Total Investment','Current Value','ROI','Gain'])
+    investment_individual = pd.DataFrame(columns=["ETF",'Total Investment','Current Value','ROI','Gain'])
     if time.time() - st.session_state.last_analysis_time >= 100:
         st.session_state.last_analysis_time = time.time()
         stocks = list(st.session_state.all_data.keys())
