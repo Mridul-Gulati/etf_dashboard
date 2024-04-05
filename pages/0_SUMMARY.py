@@ -15,7 +15,7 @@ def set_page_config():
         page_config_set = True
 
 set_page_config()
-col1, col2 = st.columns([1,1])
+col = st.columns(2)
 st.session_state.last_analysis_time = time.time() - 110
 
 def highlight_gain_condition(s):
@@ -80,8 +80,6 @@ if 'total_invested' not in st.session_state:
 
 sum_title = st.empty()
 total_invested_place = st.empty()
-individual_invested_place_1 = st.empty()
-individual_invested_place_2 = st.empty()
 sum_title.title('Summary')
 
 total_invested = 0
@@ -118,8 +116,6 @@ while True:
         styled_res_individual_2 = res_individual_rounded_2.style.format(format_dict).apply(highlight_gain_condition2,subset=['ROI'], axis=0)
         total_invested_place.dataframe(styled_res)
         numRows = len(res_individual_rounded)//2
-        with col1:
-            individual_invested_place_1.dataframe(styled_res_individual_1, use_container_width=True, height=(numRows + 1) * 35 + 3)
-        with col2:
-            individual_invested_place_2.dataframe(styled_res_individual_2, use_container_width=True, height=(numRows + 1) * 35 + 3)
+        col[0].dataframe(styled_res_individual_1, use_container_width=True, height=(numRows + 1) * 35 + 3)
+        col[1].dataframe(styled_res_individual_2, use_container_width=True, height=(numRows + 1) * 35 + 3)
         st.session_state.total_invested = total_invested
