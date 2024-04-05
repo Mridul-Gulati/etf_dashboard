@@ -6,6 +6,7 @@ import yfinance as yf
 from datetime import datetime
 import math
 import datetime
+from streamlit_extras.switch_page_button import switch_page
 # secrets = toml.load('secrets.toml')
 if "secrets" not in st.session_state:
     st.session_state.secrets = st.secrets
@@ -216,6 +217,7 @@ if 'total_invested' not in st.session_state:
 if user:
     if 'last_analysis_time' not in st.session_state:
         st.session_state.last_analysis_time = time.time()
+    switch_page("0_SUMMARY")
     sum_title = st.empty()
     total_invested_place = st.empty()
     summary_place = st.empty()
