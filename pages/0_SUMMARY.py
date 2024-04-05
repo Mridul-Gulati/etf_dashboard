@@ -7,6 +7,7 @@ import datetime
 
 secrets = st.session_state.secrets
 page_config_set = False
+col1, col2 = st.columns(2)
 
 def set_page_config():
     global page_config_set
@@ -79,7 +80,8 @@ if 'total_invested' not in st.session_state:
 
 sum_title = st.empty()
 total_invested_place = st.empty()
-individual_invested_place = st.empty()
+individual_invested_place_1 = st.empty()
+individual_invested_place_2 = st.empty()
 sum_title.title('Summary')
 
 total_invested = 0
@@ -108,10 +110,16 @@ while True:
         investment_total = pd.concat([investment_total,pd.DataFrame({'Total Investment':[total_invested],'Current Value':[total_current_value],'ROI':[round(((total_current_value - total_invested)/total_invested) * 100,2)],'Gain':[round(total_current_value - total_invested,2)]})],ignore_index=True)
         res_rounded = investment_total.round(2)
         res_individual_rounded = investment_individual.sort_values("ROI", ascending=False).round(2)
+        res_individual_rounded_1 = res_individual_rounded.iloc[:len(res_individual_rounded)//2]
+        res_individual_rounded_2 = res_individual_rounded.iloc[len(res_individual_rounded)//2:]
         format_dict = {'Total Investment': '{:.2f}', 'Current Value': '{:.2f}', 'ROI': '{:.2f}', 'Gain': '{:.0f}'}
         styled_res = res_rounded.style.format(format_dict).apply(highlight_gain_condition, axis=0)
-        styled_res_individual = res_individual_rounded.style.format(format_dict).apply(highlight_gain_condition2,subset=['ROI'], axis=0)
+        styled_res_individual_1 = res_individual_rounded_1.style.format(format_dict).apply(highlight_gain_condition2,subset=['ROI'], axis=0)
+        styled_res_individual_2 = res_individual_rounded_2.style.format(format_dict).apply(highlight_gain_condition2,subset=['ROI'], axis=0)
         total_invested_place.dataframe(styled_res)
-        numRows = len(res_individual_rounded)
-        individual_invested_place.dataframe(styled_res_individual, use_container_width=True, height=(numRows + 1) * 35 + 3)
+        numRows = len(res_individual_rounded//2)
+        with col1:
+            individual_invested_place_1.dataframe(styled_res_individual_1, use_container_width=True, height=(numRows + 1) * 35 + 3)
+        with col2:
+            individual_invested_place_2.dataframe(styled_res_individual_2, use_container_width=True, height=(numRows + 1) * 35 + 3)
         st.session_state.total_invested = total_invested
