@@ -96,12 +96,17 @@ sum_title.title('Summary')
 col = st.columns(2)
 col1 = col[0].empty()
 col2 = col[1].empty()
+headings = st.columns(2)
+buy = headings[0].empty()
+sell = headings[1].empty()
 buy_sell = st.columns(2)
 buy_etf = buy_sell[0].empty()
 sell_etf = buy_sell[1].empty()
 total_invested = 0
 total_current_value = 0
 while True:
+    total_invested = 0
+    total_current_value = 0
     investment_total = pd.DataFrame(columns=['Total Investment','Current Value','ROI','Gain'])
     investment_individual = pd.DataFrame(columns=["ETF",'Buy Avg', 'Qty','Total Investment','Current Value','ROI','Gain'])
     sell = pd.DataFrame(columns=['ETF', 'Price', 'Qty.', 'Age', 'CMP', 'Gain%', 'Amount'])
@@ -150,7 +155,7 @@ while True:
                 buy = pd.concat([buy,new_res],ignore_index=True)
             if buy.empty:
                 total = 0
-            investment_individual = pd.concat([investment_individual,pd.DataFrame({"ETF":[stock],'Buy Avg':[buy_price], 'Qty':[total_qty],'Total Investment':[total_value],'Current Value':[current_value],'ROI':[round((pnl) * 100,2)],'Gain':[round(current_value - total_value,2)]})],ignore_index=True)
+            investment_individual = pd.concat([investment_individual,pd.DataFrame({"ETF":[stock],'Buy Avg':[buy_price], 'Qty':[(st.session_state.all_data[stock]['Qty.']).sum()],'Total Investment':[total_value],'Current Value':[current_value],'ROI':[round((pnl) * 100,2)],'Gain':[round(current_value - total_value,2)]})],ignore_index=True)
         total = buy['Amount'].sum()
         format_dict2 = {'Price': '{:.2f}', 'Qty.': '{:.2f}', 'CMP': '{:.2f}', 'Gain%': '{:.2f}', 'Amount': '{:.2f}', 'Buy Value': '{:.2f}', 'Current Value': '{:.2f}'}
         if not sell.empty:
@@ -171,7 +176,7 @@ while True:
         st.session_state.total_invested = total_invested
         col1.dataframe(styled_res_individual_1, use_container_width=True, height=(numRows + 1) * 35 + 3)
         col2.dataframe(styled_res_individual_2, use_container_width=True, height=(numRows + 2) * 35 + 3)
-        buy_etf.subheader('Buy')
+        buy.subheader('Buy')
         buy_etf.dataframe(buy.sort_values('Down_LB%'), use_container_width=True)
-        sell_etf.subheader('Sell')
+        sell.subheader('Sell')
         sell_etf.dataframe(styled_res_df, use_container_width=True)
