@@ -103,7 +103,7 @@ total_invested = 0
 total_current_value = 0
 while True:
     investment_total = pd.DataFrame(columns=['Total Investment','Current Value','ROI','Gain'])
-    investment_individual = pd.DataFrame(columns=["ETF",'Total Investment','Current Value','ROI','Gain'])
+    investment_individual = pd.DataFrame(columns=["ETF",'Buy Avg', 'Qty','Total Investment','Current Value','ROI','Gain'])
     sell = pd.DataFrame(columns=['ETF', 'Price', 'Qty.', 'Age', 'CMP', 'Gain%', 'Amount'])
     buy = pd.DataFrame(columns=['ETF','Down%', 'Down_LB%', 'CMP', 'LB','Amount', 'Qty'])
     if time.time() - st.session_state.last_analysis_time >= 100:
@@ -150,7 +150,7 @@ while True:
                 buy = pd.concat([buy,new_res],ignore_index=True)
             if buy.empty:
                 total = 0
-            investment_individual = pd.concat([investment_individual,pd.DataFrame({"ETF":[stock],'Total Investment':[total_value],'Current Value':[current_value],'ROI':[round((pnl) * 100,2)],'Gain':[round(current_value - total_value,2)]})],ignore_index=True)
+            investment_individual = pd.concat([investment_individual,pd.DataFrame({"ETF":[stock],'Buy Avg':[buy_price], 'Qty':[total_qty],'Total Investment':[total_value],'Current Value':[current_value],'ROI':[round((pnl) * 100,2)],'Gain':[round(current_value - total_value,2)]})],ignore_index=True)
         total = buy['Amount'].sum()
         format_dict2 = {'Price': '{:.2f}', 'Qty.': '{:.2f}', 'CMP': '{:.2f}', 'Gain%': '{:.2f}', 'Amount': '{:.2f}', 'Buy Value': '{:.2f}', 'Current Value': '{:.2f}'}
         sell.drop(columns=['Date'], inplace=True)
@@ -161,7 +161,7 @@ while True:
         res_individual_rounded = investment_individual.sort_values("ROI", ascending=False).round(2)
         res_individual_rounded_1 = res_individual_rounded.iloc[:len(res_individual_rounded)//2]
         res_individual_rounded_2 = res_individual_rounded.iloc[len(res_individual_rounded)//2:]
-        format_dict = {'Total Investment': '{:.2f}', 'Current Value': '{:.2f}', 'ROI': '{:.2f}', 'Gain': '{:.0f}'}
+        format_dict = {'Total Investment': '{:.2f}', 'Buy Avg':'{:.2f}', 'Current Value': '{:.2f}', 'ROI': '{:.2f}', 'Gain': '{:.0f}'}
         styled_res = res_rounded.style.format(format_dict).apply(highlight_gain_condition, axis=0)
         styled_res_individual_1 = res_individual_rounded_1.style.format(format_dict).apply(highlight_gain_condition2,subset=['ROI'], axis=0)
         styled_res_individual_2 = res_individual_rounded_2.style.format(format_dict).apply(highlight_gain_condition2,subset=['ROI'], axis=0)
