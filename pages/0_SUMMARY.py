@@ -108,7 +108,7 @@ while True:
     total_invested = 0
     total_current_value = 0
     investment_total = pd.DataFrame(columns=['Total Investment','Current Value','ROI','Gain'])
-    investment_individual = pd.DataFrame(columns=["ETF",'Buy Avg', 'Qty','Total Investment','Current Value','ROI','Gain'])
+    investment_individual = pd.DataFrame(columns=["ETF",'Buy Avg', 'Qty','CMP', 'ROI','Gain','Total Investment','Current Value'])
     sell = pd.DataFrame(columns=['ETF', 'Price', 'Qty.', 'Age', 'CMP', 'Gain%', 'Amount'])
     buy = pd.DataFrame(columns=['ETF','Down%', 'Down_LB%', 'CMP', 'LB','Amount', 'Qty'])
     if time.time() - st.session_state.last_analysis_time >= 0:
