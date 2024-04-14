@@ -5,8 +5,6 @@ import yfinance as yf
 from datetime import datetime
 import datetime
 import math
-from cache_manager import clear_cache_for_user
-from app import fetch_data_from_google_sheets, fetch_data_from_google_sheets_d, fetch_data_from_google_sheets_m, fetch_data_from_google_sheets_h
 # Sidebar button to toggle cache clearing
 
 secrets = st.session_state.secrets
@@ -20,16 +18,6 @@ def set_page_config():
 
 set_page_config()
 st.session_state.last_analysis_time = time.time() - 110
-
-if st.sidebar.button("Clear Cache"):
-    if st.session_state.user == 'Amit':
-        clear_cache_for_user('Amit',fetch_data_from_google_sheets)
-    elif st.session_state.user == 'Deepti':
-        clear_cache_for_user('Deepti',fetch_data_from_google_sheets_d)
-    elif st.session_state.user == 'Mridul':
-        clear_cache_for_user('Mridul',fetch_data_from_google_sheets_m)
-    elif st.session_state.user == 'Hemank':
-        clear_cache_for_user('Hemank',fetch_data_from_google_sheets_h)
 
 def highlight_gain_condition3(s):
     if s.name == 'Gain%':
