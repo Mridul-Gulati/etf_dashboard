@@ -231,7 +231,7 @@ if st.sidebar.button("Clear Cache"):
         fetch_data_from_google_sheets_m.clear()
     elif st.session_state.user == 'Hemank':
         fetch_data_from_google_sheets_h.clear()
-
+    st.rerun()
 if 'total_invested' not in st.session_state:
     st.session_state.total_invested = 0
 if user:
