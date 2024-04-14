@@ -54,6 +54,7 @@ def highlight_single_gain(value):
         color = 'rgba(63, 255, 0,1)'  
     return 'background-color: %s' % color
 
+@st.cache_data(ttl=25200)
 def fetch_data_from_google_sheets_d(_secrets):
     with st.spinner("Fetching data from Google Sheets..."):
         try:
@@ -72,11 +73,15 @@ def fetch_data_from_google_sheets_d(_secrets):
             spreadsheet_key = _secrets["connections"]["gsheets_d"]["spreadsheet"]
             
             all_data = {}
+            cnt = 0
             for cmp_symbol in _secrets["connections"]["gsheets"]["worksheets"].values():
                 sheet = client.open_by_key(spreadsheet_key).worksheet(cmp_symbol)
                 data = sheet.get_all_values()
                 df = pd.DataFrame(data)
                 df = pd.DataFrame(data[1:], columns=data[0])
+                cnt += 1
+                if cnt % 15 == 0:
+                    time.sleep(105)
                 all_data[cmp_symbol] = df
             
             return all_data
@@ -147,6 +152,7 @@ def fetch_data_from_google_sheets_h(_secrets):
             st.error(f"An error occurred: {e}")
             st.stop()
 
+@st.cache_data(ttl=25200)
 def fetch_data_from_google_sheets(_secrets):
     with st.spinner("Fetching data from Google Sheets..."):
         try:
@@ -165,11 +171,15 @@ def fetch_data_from_google_sheets(_secrets):
             spreadsheet_key = _secrets["connections"]["gsheets"]["spreadsheet"]
             
             all_data = {}
+            cnt = 0
             for cmp_symbol in _secrets["connections"]["gsheets"]["worksheets"].values():
                 sheet = client.open_by_key(spreadsheet_key).worksheet(cmp_symbol)
                 data = sheet.get_all_values()
                 df = pd.DataFrame(data)
                 df = pd.DataFrame(data[1:], columns=data[0])
+                cnt += 1
+                if cnt % 15 == 0:
+                    time.sleep(105)
                 all_data[cmp_symbol] = df
             
             return all_data
@@ -211,6 +221,16 @@ elif user == 'Hemank':
     all_data_h = fetch_data_from_google_sheets_h(st.session_state.secrets)
     st.session_state.all_data = all_data_h
     st.session_state.user = 'Hemank'
+
+if st.sidebar.button("Clear Cache"):
+    if st.session_state.user == 'Amit':
+        fetch_data_from_google_sheets.clear()
+    elif st.session_state.user == 'Deepti':
+        fetch_data_from_google_sheets_d.clear()
+    elif st.session_state.user == 'Mridul':
+        fetch_data_from_google_sheets_m.clear()
+    elif st.session_state.user == 'Hemank':
+        fetch_data_from_google_sheets_h.clear()
 
 if 'total_invested' not in st.session_state:
     st.session_state.total_invested = 0
