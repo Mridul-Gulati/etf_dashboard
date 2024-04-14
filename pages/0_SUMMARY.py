@@ -5,6 +5,9 @@ import yfinance as yf
 from datetime import datetime
 import datetime
 import math
+from cache_manager import clear_cache
+
+# Sidebar button to toggle cache clearing
 
 secrets = st.session_state.secrets
 page_config_set = False
@@ -18,6 +21,8 @@ def set_page_config():
 set_page_config()
 st.session_state.last_analysis_time = time.time() - 110
 
+if st.sidebar.button("Clear Cache"):
+    clear_cache()
 def highlight_gain_condition3(s):
     if s.name == 'Gain%':
         return s.apply(lambda x: highlight_gain_sell(x))
