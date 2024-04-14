@@ -150,7 +150,7 @@ while True:
             amount = int(amt + variable) if variable > 0 else 0
             qty = math.ceil(amount / cmp)
             down_lb = round((cmp - last_buy)/last_buy * 100,2) if last_buy != 0 else 0
-            if cmp < last_buy and pnl < 0:
+            if down_lb <= -1 and pnl < 0:
                 new_res = pd.DataFrame({'ETF': [stock], 'Down%':[round(pnl*100,2)], 'Down_LB%':[down_lb],'CMP':[cmp], 'Amount': [amount], 'Qty': [qty], 'LB': [last_buy]})
                 buy = pd.concat([buy,new_res],ignore_index=True)
             if buy.empty:
