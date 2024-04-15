@@ -147,7 +147,7 @@ while True:
                     amt = 25000
             else:
                 amt = 2500
-            variable = round((amt * multi_fac)/100,2)
+            variable = 0
             amount = int(amt + variable) if variable > 0 else 0
             qty = math.ceil(amount / cmp)
             down_lb = round((cmp - last_buy)/last_buy * 100,2) if last_buy != 0 else 0
