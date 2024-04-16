@@ -89,7 +89,7 @@ def fetch_data_from_google_sheets_d(_secrets):
         except Exception as e:
             st.error(f"An error occurred: {e}")
             st.stop()
-            
+
 @st.cache_data(ttl=25200)
 def fetch_data_from_google_sheets_m(_secrets):
     with st.spinner("Fetching data from Google Sheets..."):
@@ -121,7 +121,8 @@ def fetch_data_from_google_sheets_m(_secrets):
         except Exception as e:
             st.error(f"An error occurred: {e}")
             st.stop()
-
+            
+@st.cache_data(ttl=25200)
 def fetch_data_from_google_sheets_h(_secrets):
     with st.spinner("Fetching data from Google Sheets..."):
         try:
