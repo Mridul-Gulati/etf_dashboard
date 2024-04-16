@@ -107,13 +107,16 @@ def fetch_data_from_google_sheets_m(_secrets):
                 "client_x509_cert_url": _secrets["connections"]["gsheets_m"]["client_x509_cert_url"]
             })
             spreadsheet_key = _secrets["connections"]["gsheets_m"]["spreadsheet"]
-            
+            cnt = 0
             all_data = {}
             for cmp_symbol in _secrets["connections"]["gsheets"]["worksheets"].values():
                 sheet = client.open_by_key(spreadsheet_key).worksheet(cmp_symbol)
                 data = sheet.get_all_values()
                 df = pd.DataFrame(data)
                 df = pd.DataFrame(data[1:], columns=data[0])
+                cnt += 1
+                if cnt % 15 == 0:
+                    time.sleep(105)
                 all_data[cmp_symbol] = df
             
             return all_data
@@ -139,13 +142,16 @@ def fetch_data_from_google_sheets_h(_secrets):
                 "client_x509_cert_url": _secrets["connections"]["gsheets_h"]["client_x509_cert_url"]
             })
             spreadsheet_key = _secrets["connections"]["gsheets_h"]["spreadsheet"]
-            
+            cnt = 0
             all_data = {}
             for cmp_symbol in _secrets["connections"]["gsheets"]["worksheets"].values():
                 sheet = client.open_by_key(spreadsheet_key).worksheet(cmp_symbol)
                 data = sheet.get_all_values()
                 df = pd.DataFrame(data)
                 df = pd.DataFrame(data[1:], columns=data[0])
+                cnt += 1
+                if cnt % 15 == 0:
+                    time.sleep(105)
                 all_data[cmp_symbol] = df
             
             return all_data
